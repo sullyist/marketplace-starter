@@ -1,3 +1,5 @@
+// prisma/schema.prisma
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -8,33 +10,33 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String    @id @default(cuid())
+  email     String    @unique
   name      String?
-  role      String   @default("buyer")
+  password  String // ✅ New field for hashed password
+  role      String    @default("buyer")
   products  Product[]
   orders    Order[]
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 }
 
 model Product {
-  id          String    @id @default(cuid())
+  id          String   @id @default(cuid())
   title       String
   description String
   price       Float
   imageUrl    String
-  user        User      @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
   userId      String
-  orders      Order[]
   createdAt   DateTime @default(now())
+  orders      Order[]
 }
 
 model Order {
-  id        String    @id @default(cuid())
-  user      User      @relation(fields: [userId], references: [id])
-  userId    String
-  product   Product   @relation(fields: [productId], references: [id])
+  id        String   @id @default(cuid())
+  product   Product  @relation(fields: [productId], references: [id])
   productId String
-  status    String    @default("pending")
-  createdAt DateTime  @default(now())
+  buyer     User     @relation(fields: [buyerId], references: [id])
+  buyerId   String
+  createdAt DateTime @default(now())
 }
