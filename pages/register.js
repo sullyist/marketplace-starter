@@ -1,7 +1,6 @@
 // pages/register.js
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { hash } from 'bcrypt';
 
 export default function Register() {
   const [form, setForm] = useState({ email: '', password: '', name: '' });
