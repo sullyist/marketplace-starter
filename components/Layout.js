@@ -1,34 +1,46 @@
 // components/Layout.js
 import Link from 'next/link';
-import { signOut, useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 
 export default function Layout({ children }) {
   const { data: session } = useSession();
 
   return (
     <div>
-      <nav style={{ padding: 16, borderBottom: '1px solid #ccc', marginBottom: 20 }}>
-        <Link href="/" style={{ marginRight: 10 }}>Home</Link>
-        {session && (
-          <>
-            <Link href="/create" style={{ marginRight: 10 }}>Create</Link>
-            <Link href="/dashboard" style={{ marginRight: 10 }}>Dashboard</Link>
-          </>
-        )}
-        {!session ? (
-          <>
-            <Link href="/login" style={{ marginRight: 10 }}>Login</Link>
-            <Link href="/register">Register</Link>
-          </>
-        ) : (
-          <>
-            <span style={{ marginLeft: 10 }}>Hello, {session.user.email}</span>
-            <button onClick={() => signOut()} style={{ marginLeft: 10 }}>Logout</button>
-          </>
-        )}
+      <nav className="bg-white border-b shadow-sm px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <Link href="/" className="text-lg font-semibold hover:text-blue-600">
+            Marketplace
+          </Link>
+          {session && (
+            <>
+              <Link href="/create" className="hover:text-blue-600">Create</Link>
+              <Link href="/dashboard" className="hover:text-blue-600">Dashboard</Link>
+            </>
+          )}
+        </div>
+
+        <div className="flex items-center space-x-4">
+          {!session ? (
+            <>
+              <Link href="/login" className="hover:text-blue-600">Login</Link>
+              <Link href="/register" className="hover:text-blue-600">Register</Link>
+            </>
+          ) : (
+            <>
+              <span className="text-sm text-gray-600">Hello, {session.user.email}</span>
+              <button
+                onClick={() => signOut()}
+                className="px-3 py-1 bg-black text-white rounded hover:bg-gray-800"
+              >
+                Logout
+              </button>
+            </>
+          )}
+        </div>
       </nav>
 
-      <main style={{ padding: 16 }}>{children}</main>
+      <main className="p-6 max-w-4xl mx-auto">{children}</main>
     </div>
   );
 }
