@@ -9,13 +9,17 @@ export default function Layout({ children }) {
     <div>
       <nav className="bg-white border-b shadow-sm px-6 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <Link href="/" className="text-lg font-semibold hover:text-blue-600">
-            Marketplace
+          <Link href="/">
+            <a className="text-lg font-semibold hover:text-blue-600">Marketplace</a>
           </Link>
           {session && (
             <>
-              <Link href="/create" className="hover:text-blue-600">Create</Link>
-              <Link href="/dashboard" className="hover:text-blue-600">Dashboard</Link>
+              <Link href="/create">
+                <a className="hover:text-blue-600">Create</a>
+              </Link>
+              <Link href="/dashboard">
+                <a className="hover:text-blue-600">Dashboard</a>
+              </Link>
             </>
           )}
         </div>
@@ -23,8 +27,12 @@ export default function Layout({ children }) {
         <div className="flex items-center space-x-4">
           {!session ? (
             <>
-              <Link href="/login" className="hover:text-blue-600">Login</Link>
-              <Link href="/register" className="hover:text-blue-600">Register</Link>
+              <Link href="/login">
+                <a className="hover:text-blue-600">Login</a>
+              </Link>
+              <Link href="/register">
+                <a className="hover:text-blue-600">Register</a>
+              </Link>
             </>
           ) : (
             <>
