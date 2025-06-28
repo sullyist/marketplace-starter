@@ -16,9 +16,7 @@ export default function Layout({ children }) {
           </Link>
           {session && (
             <>
-              <Link href="/create">
-                <a className="hover:text-blue-600">Create</a>
-              </Link>
+              <Link href="/post-ad" className="hover:text-blue-600">Post Ad</Link>
               <Link href="/dashboard">
                 <a className="hover:text-blue-600">Dashboard</a>
               </Link>
