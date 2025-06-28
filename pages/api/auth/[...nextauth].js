@@ -40,8 +40,8 @@ export default NextAuth({
           name: user.name,
           email: user.email,
         };
-      },
-    }),
+      }
+    })
   ],
   session: {
     strategy: 'jwt',
