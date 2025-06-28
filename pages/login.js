@@ -1,29 +1,37 @@
-// pages/login.js
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
-import { useRouter } from 'next/router';
 
-export default function Login() {
+export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' });
-  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await signIn('credentials', {
-      redirect: false,
+    await signIn('credentials', {
       email: form.email,
       password: form.password,
+      callbackUrl: '/',
     });
-
-    if (res.ok) router.push('/');
-    else alert('Login failed');
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <input name="email" placeholder="Email" onChange={e => setForm({ ...form, email: e.target.value })} required />
-      <input name="password" placeholder="Password" type="password" onChange={e => setForm({ ...form, password: e.target.value })} required />
-      <button type="submit">Login</button>
+    <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-10">
+      <input
+        type="email"
+        placeholder="Email"
+        value={form.email}
+        onChange={(e) => setForm({ ...form, email: e.target.value })}
+        className="block mb-2 p-2 border w-full"
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        value={form.password}
+        onChange={(e) => setForm({ ...form, password: e.target.value })}
+        className="block mb-2 p-2 border w-full"
+      />
+      <button type="submit" className="bg-blue-600 text-white p-2 w-full">
+        Sign in
+      </button>
     </form>
   );
 }
