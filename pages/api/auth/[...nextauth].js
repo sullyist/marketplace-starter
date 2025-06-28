@@ -7,29 +7,35 @@ const prisma = new PrismaClient();
 
 export default NextAuth({
   providers: [
-    CredentialsProvider({
-      name: 'Credentials',
-      credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' },
-      },
-      async authorize(credentials) {
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
+    async authorize(credentials) {
+  console.log("LOGIN attempt:", credentials.email);
 
-        if (!user || !user.password) return null;
+  const user = await prisma.user.findUnique({
+    where: { email: credentials.email },
+  });
 
-        const isValid = await compare(credentials.password, user.password);
-        if (!isValid) return null;
+  console.log("USER from DB:", user);
 
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-        };
-      },
-    }),
+  if (!user || !user.password) {
+    console.log("❌ User not found or missing password");
+    return null;
+  }
+
+  const isValid = await compare(credentials.password, user.password);
+  console.log("✅ Password valid:", isValid);
+
+  if (!isValid) {
+    console.log("❌ Invalid password");
+    return null;
+  }
+
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+  };
+}
+
   ],
   session: {
     strategy: 'jwt',
