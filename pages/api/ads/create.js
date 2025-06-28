@@ -1,19 +1,25 @@
 // pages/api/ads/create.js
 import { PrismaClient } from '@prisma/client';
-import { getSession } from 'next-auth/react';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '../auth/[...nextauth]';
 
 const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
-  const session = await getSession({ req });
-  if (!session) return res.status(401).json({ error: 'Unauthorized' });
+  const session = await getServerSession(req, res, authOptions);
+
+  if (!session || !session.user?.email) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
 
   const { title, description, price } = req.body;
 
   if (!title || !description || !price) {
-    return res.status(400).json({ error: 'Missing fields' });
+    return res.status(400).json({ error: 'Missing required fields' });
   }
 
   try {
@@ -22,13 +28,15 @@ export default async function handler(req, res) {
         title,
         description,
         price: parseFloat(price),
-        user: { connect: { email: session.user.email } },
+        user: {
+          connect: { email: session.user.email },
+        },
       },
     });
 
-    return res.status(201).json(ad);
-  } catch (error) {
-    console.error('Ad creation error:', error);
-    return res.status(500).json({ error: 'Failed to create ad' });
+    res.status(201).json(ad);
+  } catch (err) {
+    console.error('Ad creation failed:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 }
