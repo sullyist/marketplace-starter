@@ -1,4 +1,3 @@
-// components/Layout.js
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 
@@ -11,6 +10,9 @@ export default function Layout({ children }) {
         <div className="flex items-center space-x-4">
           <Link href="/">
             <a className="text-lg font-semibold hover:text-blue-600">Marketplace</a>
+          </Link>
+          <Link href="/listings">
+            <a className="hover:text-blue-600">Listings</a>
           </Link>
           {session && (
             <>
