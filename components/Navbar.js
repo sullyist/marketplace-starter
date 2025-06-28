@@ -29,6 +29,7 @@ export default function Navbar() {
           <Link href="/create">Post Ad</Link>
           <Link href="/dashboard">Dashboard</Link>
           <Link href="/login">Login</Link>
+	  <Link href="/listings">Listings</Link>
         </div>
       </div>
 
@@ -53,6 +54,9 @@ export default function Navbar() {
             </Link>
             <Link href="/login" onClick={toggleMenu} className="block">
               Login
+            </Link>
+            <Link href="/listings" onClick={toggleMenu} className="block">
+             Listings
             </Link>
           </motion.div>
         )}
