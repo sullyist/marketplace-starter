@@ -1,5 +1,3 @@
-// pages/api/auth/[...nextauth].js
-
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaClient } from '@prisma/client';
@@ -17,11 +15,6 @@ export default NextAuth({
       },
       async authorize(credentials) {
         console.log("LOGIN attempt:", credentials?.email);
-
-        if (!credentials?.email || !credentials?.password) {
-          console.log("❌ Missing credentials");
-          return null;
-        }
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
