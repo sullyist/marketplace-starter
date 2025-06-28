@@ -1,3 +1,5 @@
+// pages/api/auth/[...nextauth].js
+
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaClient } from '@prisma/client';
@@ -7,44 +9,52 @@ const prisma = new PrismaClient();
 
 export default NextAuth({
   providers: [
-  CredentialsProvider({
-    name: 'Credentials',
-    credentials: {
-      email: { label: 'Email', type: 'email' },
-      password: { label: 'Password', type: 'password' },
-    },
-    async authorize(credentials) {
-      console.log("LOGIN attempt:", credentials?.email);
+    CredentialsProvider({
+      name: 'Credentials',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        console.log("LOGIN attempt:", credentials?.email);
 
-      if (!credentials?.email || !credentials?.password) {
-        console.log("❌ Missing credentials");
-        return null;
-      }
+        if (!credentials?.email || !credentials?.password) {
+          console.log("❌ Missing credentials");
+          return null;
+        }
 
-      const user = await prisma.user.findUnique({
-        where: { email: credentials.email },
-      });
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
 
-      console.log("USER from DB:", user);
+        console.log("USER from DB:", user);
 
-      if (!user || !user.password) {
-        console.log("❌ User not found or missing password");
-        return null;
-      }
+        if (!user || !user.password) {
+          console.log("❌ User not found or missing password");
+          return null;
+        }
 
-      const isValid = await compare(credentials.password, user.password);
-      console.log("✅ Password valid:", isValid);
+        const isValid = await compare(credentials.password, user.password);
+        console.log("✅ Password valid:", isValid);
 
-      if (!isValid) {
-        console.log("❌ Invalid password");
-        return null;
-      }
+        if (!isValid) {
+          console.log("❌ Invalid password");
+          return null;
+        }
 
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-      };
-    }
-  })
-],
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        };
+      },
+    }),
+  ],
+  session: {
+    strategy: 'jwt',
+  },
+  pages: {
+    signIn: '/login',
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+});
