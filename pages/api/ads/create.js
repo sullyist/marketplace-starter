@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client';
 import formidable from 'formidable';
 import fs from 'fs/promises';
 import path from 'path';
+import os from 'os';
 
 export const config = {
   api: {
@@ -29,7 +30,7 @@ export default async function handler(req, res) {
   await fs.mkdir(uploadDir, { recursive: true });
 
   const form = formidable({
-    uploadDir,
+    uploadDir: os.tmpdir(),
     keepExtensions: true,
     multiples: false,
   });
