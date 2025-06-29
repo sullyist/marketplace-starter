@@ -3,7 +3,8 @@ import { v2 as cloudinary } from 'cloudinary';
 import { PrismaClient } from '@prisma/client';
 import formidable from 'formidable';
 import fs from 'fs';
-import os from 'os'; // ✅ Needed for tmpdir
+import os from 'os';
+import path from 'path';
 
 export const config = {
   api: {
@@ -20,25 +21,37 @@ cloudinary.config({
 const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== 'POST')
+    return res.status(405).json({ error: 'Method not allowed' });
+
+  const uploadDir = os.tmpdir();
 
   const form = formidable({
     multiples: false,
     keepExtensions: true,
-    uploadDir: os.tmpdir(), // ✅ Use /tmp instead of /var/task/tmp
+    uploadDir,
   });
 
   form.parse(req, async (err, fields, files) => {
-    if (err) return res.status(500).json({ error: 'Error parsing form' });
+    if (err) {
+      console.error('❌ Form parsing error:', err);
+      return res.status(500).json({ error: 'Form parsing failed' });
+    }
 
     try {
       const file = files.image;
-      if (!file) return res.status(400).json({ error: 'No file uploaded' });
+      if (!file || !file.filepath) {
+        console.error('❌ No valid file found:', file);
+        return res.status(400).json({ error: 'Image file missing or invalid' });
+      }
 
-      // ✅ Upload to Cloudinary
+      // Log file path for debugging
+      console.log('📸 Uploading file from:', file.filepath);
+
       const result = await cloudinary.uploader.upload(file.filepath);
 
-      // ✅ Save to DB
+      console.log('✅ Cloudinary result:', result);
+
       const newProduct = await prisma.product.create({
         data: {
           title: fields.title,
@@ -51,10 +64,10 @@ export default async function handler(req, res) {
         },
       });
 
-      res.status(200).json(newProduct);
+      return res.status(200).json(newProduct);
     } catch (error) {
       console.error('❌ Cloudinary upload error:', error);
-      res.status(500).json({ error: 'Failed to upload image or create ad' });
+      return res.status(500).json({ error: 'Failed to upload image or create ad' });
     }
   });
 }
