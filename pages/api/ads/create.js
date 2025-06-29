@@ -1,10 +1,8 @@
-// pages/api/ads/create.js
 import { v2 as cloudinary } from 'cloudinary';
 import { PrismaClient } from '@prisma/client';
 import formidable from 'formidable';
 import fs from 'fs';
 import os from 'os';
-import path from 'path';
 
 export const config = {
   api: {
@@ -24,12 +22,10 @@ export default async function handler(req, res) {
   if (req.method !== 'POST')
     return res.status(405).json({ error: 'Method not allowed' });
 
-  const uploadDir = os.tmpdir();
-
   const form = formidable({
     multiples: false,
     keepExtensions: true,
-    uploadDir,
+    uploadDir: os.tmpdir(),
   });
 
   form.parse(req, async (err, fields, files) => {
@@ -38,28 +34,26 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Form parsing failed' });
     }
 
+    const file = files.image?.[0]; // ✅ Grab the first file if it's an array
+    if (!file || !file.filepath) {
+      console.error('❌ No valid file found:', file);
+      return res.status(400).json({ error: 'Image file missing or invalid' });
+    }
+
     try {
-      const file = files.image;
-      if (!file || !file.filepath) {
-        console.error('❌ No valid file found:', file);
-        return res.status(400).json({ error: 'Image file missing or invalid' });
-      }
-
-      // Log file path for debugging
       console.log('📸 Uploading file from:', file.filepath);
-
       const result = await cloudinary.uploader.upload(file.filepath);
 
       console.log('✅ Cloudinary result:', result);
 
       const newProduct = await prisma.product.create({
         data: {
-          title: fields.title,
-          description: fields.description,
-          price: parseFloat(fields.price),
+          title: fields.title?.[0] || '',
+          description: fields.description?.[0] || '',
+          price: parseFloat(fields.price?.[0] || '0'),
           imageUrl: result.secure_url,
           user: {
-            connect: { email: fields.email },
+            connect: { email: fields.email?.[0] },
           },
         },
       });
