@@ -34,32 +34,35 @@ export default async function handler(req, res) {
   form.parse(req, async (err, fields, files) => {
     if (err) return res.status(500).json({ error: 'Form parsing failed' });
 
-    try {
-      const file = files.image;
-      if (!file || !file.filepath) {
-        return res.status(400).json({ error: 'No image file provided' });
-      }
+    console.log('📁 Form files:', files);
 
+    const file = files.image?.[0] || files.image;
+    if (!file || !file.filepath) {
+      console.error('❌ Invalid file:', file);
+      return res.status(400).json({ error: 'No valid image file provided' });
+    }
+
+    try {
       const uploadResult = await cloudinary.uploader.upload(file.filepath, {
         folder: 'marketplace-ads',
       });
 
       const newAd = await prisma.product.create({
         data: {
-          title: fields.title,
-          description: fields.description,
-          price: parseFloat(fields.price),
+          title: fields.title?.[0] || fields.title,
+          description: fields.description?.[0] || fields.description,
+          price: parseFloat(fields.price?.[0] || fields.price),
           imageUrl: uploadResult.secure_url,
           user: {
-            connect: { email: fields.email },
+            connect: { email: fields.email?.[0] || fields.email },
           },
         },
       });
 
       res.status(200).json(newAd);
     } catch (error) {
-      console.error('❌ Upload or DB error:', error);
-      res.status(500).json({ error: 'Ad creation failed' });
+      console.error('❌ Cloudinary upload error:', error);
+      res.status(500).json({ error: 'Failed to upload image or create ad' });
     }
   });
 }
