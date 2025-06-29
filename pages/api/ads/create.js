@@ -11,6 +11,7 @@ export const config = {
   },
 };
 
+// Configure Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -20,49 +21,55 @@ cloudinary.config({
 const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST')
+  if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const uploadDir = path.join(process.cwd(), '/tmp');
+  await fs.mkdir(uploadDir, { recursive: true });
 
   const form = formidable({
-    multiples: false,
+    uploadDir,
     keepExtensions: true,
-    uploadDir: path.join(process.cwd(), '/tmp'),
+    multiples: false,
   });
 
-  await fs.mkdir(form.uploadDir, { recursive: true });
-
   form.parse(req, async (err, fields, files) => {
-    if (err) return res.status(500).json({ error: 'Form parsing failed' });
-
-    console.log('📁 Form files:', files);
+    if (err) {
+      console.error('❌ Form parse error:', err);
+      return res.status(500).json({ error: 'Form parsing error' });
+    }
 
     const file = files.image?.[0] || files.image;
+
     if (!file || !file.filepath) {
-      console.error('❌ Invalid file:', file);
-      return res.status(400).json({ error: 'No valid image file provided' });
+      console.error('❌ No valid file uploaded. File object:', file);
+      return res.status(400).json({ error: 'No image uploaded' });
     }
 
     try {
-      const uploadResult = await cloudinary.uploader.upload(file.filepath, {
+      // Upload to Cloudinary
+      const result = await cloudinary.uploader.upload(file.filepath, {
         folder: 'marketplace-ads',
       });
 
-      const newAd = await prisma.product.create({
+      // Create product entry in database
+      const newProduct = await prisma.product.create({
         data: {
           title: fields.title?.[0] || fields.title,
           description: fields.description?.[0] || fields.description,
           price: parseFloat(fields.price?.[0] || fields.price),
-          imageUrl: uploadResult.secure_url,
+          imageUrl: result.secure_url,
           user: {
             connect: { email: fields.email?.[0] || fields.email },
           },
         },
       });
 
-      res.status(200).json(newAd);
+      res.status(200).json(newProduct);
     } catch (error) {
-      console.error('❌ Cloudinary upload error:', error);
-      res.status(500).json({ error: 'Failed to upload image or create ad' });
+      console.error('❌ Cloudinary upload or DB insert error:', error);
+      res.status(500).json({ error: 'Failed to upload image or save ad' });
     }
   });
 }
