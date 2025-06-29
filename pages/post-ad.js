@@ -7,17 +7,44 @@ export default function PostAd() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
+  const [image, setImage] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    setUploading(true);
+    let imageUrl = '';
+
+    // 1. Upload image to Cloudinary
+    if (image) {
+      const formData = new FormData();
+      formData.append('image', image);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || 'Image upload failed');
+        setUploading(false);
+        return;
+      }
+
+      imageUrl = data.imageUrl;
+    }
+
+    // 2. Post ad with imageUrl
     const res = await fetch('/api/ads/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, description, price }),
+      body: JSON.stringify({ title, description, price, imageUrl }),
     });
 
     const data = await res.json();
+    setUploading(false);
 
     if (res.ok) {
       router.push('/dashboard');
@@ -60,11 +87,22 @@ export default function PostAd() {
             required
           />
         </div>
+        <div>
+          <label className="block text-sm font-medium">Upload Image</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImage(e.target.files[0])}
+            className="w-full"
+            required
+          />
+        </div>
         <button
           type="submit"
+          disabled={uploading}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
-          Post Ad
+          {uploading ? 'Posting...' : 'Post Ad'}
         </button>
       </form>
     </div>

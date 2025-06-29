@@ -1,41 +1,100 @@
-// pages/api/ads/create.js
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]';
-import { PrismaClient } from '@prisma/client';
+// pages/post-ad.js
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { useSession } from 'next-auth/react';
 
-const prisma = new PrismaClient();
+export default function PostAd() {
+  const router = useRouter();
+  const { data: session } = useSession();
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
-  }
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('');
+  const [image, setImage] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
-  const session = await getServerSession(req, res, authOptions);
-  if (!session) {
-    return res.status(401).json({ error: 'Unauthorized - Please log in.' });
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!session) {
+      alert('You must be logged in to post an ad');
+      return;
+    }
 
-  const { title, description, price } = req.body;
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('price', price);
+    formData.append('image', image);
+    formData.append('email', session.user.email); // You could also switch to using session ID
 
-  if (!title || !description || !price) {
-    return res.status(400).json({ error: 'Missing fields in request.' });
-  }
-
-  try {
-    const newAd = await prisma.product.create({
-      data: {
-        title,
-        description,
-        price: parseFloat(price),
-        user: {
-          connect: { email: session.user.email },
-        },
-      },
+    setUploading(true);
+    const res = await fetch('/api/ads/create', {
+      method: 'POST',
+      body: formData,
     });
 
-    return res.status(201).json(newAd);
-  } catch (err) {
-    console.error('❌ Error creating ad:', err);
-    return res.status(500).json({ error: 'Internal Server Error' });
-  }
+    const data = await res.json();
+    setUploading(false);
+
+    if (res.ok) {
+      router.push('/dashboard');
+    } else {
+      alert(data.error || 'Failed to post ad');
+    }
+  };
+
+  return (
+    <div className="max-w-xl mx-auto mt-8">
+      <h1 className="text-2xl font-bold mb-4">Post New Ad</h1>
+      <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
+        <div>
+          <label className="block text-sm font-medium">Ad Title</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium">Description</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium">Price (€)</label>
+          <input
+            type="number"
+            step="0.01"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium">Upload Image</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImage(e.target.files[0])}
+            className="w-full"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={uploading}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          {uploading ? 'Posting...' : 'Post Ad'}
+        </button>
+      </form>
+    </div>
+  );
 }
