@@ -27,32 +27,37 @@ export default async function handler(req, res) {
   });
 
   form.parse(req, async (err, fields, files) => {
-    if (err) return res.status(500).json({ error: 'Error parsing form' });
+    if (err) {
+      console.error('❌ Form parsing error:', err);
+      return res.status(500).json({ error: 'Error parsing form' });
+    }
 
     try {
       const file = files.image;
-      if (!file) return res.status(400).json({ error: 'No file uploaded' });
+      if (!file || !file.filepath) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
 
-      // Upload file to Cloudinary
-      const result = await cloudinary.uploader.upload(file.filepath);
+      // Upload to Cloudinary
+      const uploadResult = await cloudinary.uploader.upload(file.filepath);
 
-      // Create product in DB
+      // Insert into database
       const newProduct = await prisma.product.create({
         data: {
           title: fields.title,
           description: fields.description,
           price: parseFloat(fields.price),
-          imageUrl: result.secure_url,
+          imageUrl: uploadResult.secure_url,
           user: {
-            connect: { email: fields.email }, // Or via session
+            connect: { email: fields.email },
           },
         },
       });
 
-      res.status(200).json(newProduct);
+      return res.status(200).json(newProduct);
     } catch (error) {
-      console.error('❌ Cloudinary upload error:', error);
-      res.status(500).json({ error: 'Failed to upload image or create ad' });
+      console.error('❌ Upload or DB error:', error);
+      return res.status(500).json({ error: 'Failed to upload image or create ad' });
     }
   });
 }
