@@ -1,7 +1,7 @@
-// pages/api/upload.js
-import { IncomingForm } from 'formidable';
+import { v2 as cloudinary } from 'cloudinary';
+import formidable from 'formidable';
 import fs from 'fs';
-import cloudinary from 'cloudinary';
+import path from 'path';
 
 export const config = {
   api: {
@@ -9,39 +9,38 @@ export const config = {
   },
 };
 
-// Configure Cloudinary
-cloudinary.v2.config({
+cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const form = new IncomingForm();
+  const form = formidable({ multiples: false, keepExtensions: true });
 
   form.parse(req, async (err, fields, files) => {
     if (err) {
-      return res.status(500).json({ error: 'Form parsing error' });
+      console.error('❌ Formidable error:', err);
+      return res.status(500).json({ error: 'Error parsing form data' });
     }
 
-    const file = files.image;
-    if (!file) {
-      return res.status(400).json({ error: 'No image file uploaded' });
+    const imageFile = files.image;
+    if (!imageFile || !imageFile.filepath) {
+      console.error('❌ File missing or filepath invalid:', imageFile);
+      return res.status(400).json({ error: 'Image file missing' });
     }
 
     try {
-      const result = await cloudinary.v2.uploader.upload(file.filepath, {
-        folder: 'marketplace-ads',
+      const result = await cloudinary.uploader.upload(imageFile.filepath, {
+        folder: 'marketplace_ads', // Optional: organize images in a Cloudinary folder
       });
 
-      return res.status(200).json({ imageUrl: result.secure_url });
-    } catch (uploadErr) {
-      console.error('Cloudinary upload error:', uploadErr);
-      return res.status(500).json({ error: 'Image upload failed' });
+      return res.status(200).json({ url: result.secure_url });
+    } catch (uploadError) {
+      console.error('❌ Cloudinary upload error:', uploadError);
+      return res.status(500).json({ error: 'Cloudinary upload failed' });
     }
   });
 }

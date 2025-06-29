@@ -1,50 +1,34 @@
 // pages/post-ad.js
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { useSession } from 'next-auth/react';
 
 export default function PostAd() {
   const router = useRouter();
+  const { data: session } = useSession();
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [image, setImage] = useState(null);
-  const [uploading, setUploading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!image) return alert('Please upload an image');
 
-    setUploading(true);
-    let imageUrl = '';
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('price', price);
+    formData.append('image', image);
+    formData.append('email', session.user.email);
 
-    // 1. Upload image to Cloudinary
-    if (image) {
-      const formData = new FormData();
-      formData.append('image', image);
-
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        alert(data.error || 'Image upload failed');
-        setUploading(false);
-        return;
-      }
-
-      imageUrl = data.imageUrl;
-    }
-
-    // 2. Post ad with imageUrl
     const res = await fetch('/api/ads/create', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, description, price, imageUrl }),
+      body: formData,
     });
 
     const data = await res.json();
-    setUploading(false);
 
     if (res.ok) {
       router.push('/dashboard');
@@ -88,21 +72,20 @@ export default function PostAd() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium">Upload Image</label>
+          <label className="block text-sm font-medium">Image</label>
           <input
             type="file"
             accept="image/*"
             onChange={(e) => setImage(e.target.files[0])}
-            className="w-full"
+            className="w-full border px-3 py-2 rounded"
             required
           />
         </div>
         <button
           type="submit"
-          disabled={uploading}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
-          {uploading ? 'Posting...' : 'Post Ad'}
+          Post Ad
         </button>
       </form>
     </div>
