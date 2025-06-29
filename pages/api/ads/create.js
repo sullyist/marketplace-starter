@@ -2,9 +2,8 @@
 import { v2 as cloudinary } from 'cloudinary';
 import { PrismaClient } from '@prisma/client';
 import formidable from 'formidable';
-import fs from 'fs/promises';
-import path from 'path';
-import os from 'os';
+import fs from 'fs';
+import os from 'os'; // ✅ Needed for tmpdir
 
 export const config = {
   api: {
@@ -12,7 +11,6 @@ export const config = {
   },
 };
 
-// Configure Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -22,55 +20,41 @@ cloudinary.config({
 const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  const uploadDir = path.join(process.cwd(), '/tmp');
-  await fs.mkdir(uploadDir, { recursive: true });
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const form = formidable({
-    uploadDir: os.tmpdir(),
-    keepExtensions: true,
     multiples: false,
+    keepExtensions: true,
+    uploadDir: os.tmpdir(), // ✅ Use /tmp instead of /var/task/tmp
   });
 
   form.parse(req, async (err, fields, files) => {
-    if (err) {
-      console.error('❌ Form parse error:', err);
-      return res.status(500).json({ error: 'Form parsing error' });
-    }
-
-    const file = files.image?.[0] || files.image;
-
-    if (!file || !file.filepath) {
-      console.error('❌ No valid file uploaded. File object:', file);
-      return res.status(400).json({ error: 'No image uploaded' });
-    }
+    if (err) return res.status(500).json({ error: 'Error parsing form' });
 
     try {
-      // Upload to Cloudinary
-      const result = await cloudinary.uploader.upload(file.filepath, {
-        folder: 'marketplace-ads',
-      });
+      const file = files.image;
+      if (!file) return res.status(400).json({ error: 'No file uploaded' });
 
-      // Create product entry in database
+      // ✅ Upload to Cloudinary
+      const result = await cloudinary.uploader.upload(file.filepath);
+
+      // ✅ Save to DB
       const newProduct = await prisma.product.create({
         data: {
-          title: fields.title?.[0] || fields.title,
-          description: fields.description?.[0] || fields.description,
-          price: parseFloat(fields.price?.[0] || fields.price),
+          title: fields.title,
+          description: fields.description,
+          price: parseFloat(fields.price),
           imageUrl: result.secure_url,
           user: {
-            connect: { email: fields.email?.[0] || fields.email },
+            connect: { email: fields.email },
           },
         },
       });
 
       res.status(200).json(newProduct);
     } catch (error) {
-      console.error('❌ Cloudinary upload or DB insert error:', error);
-      res.status(500).json({ error: 'Failed to upload image or save ad' });
+      console.error('❌ Cloudinary upload error:', error);
+      res.status(500).json({ error: 'Failed to upload image or create ad' });
     }
   });
 }
