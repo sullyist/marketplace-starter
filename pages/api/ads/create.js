@@ -1,100 +1,58 @@
-// pages/post-ad.js
-import { useState } from 'react';
-import { useRouter } from 'next/router';
-import { useSession } from 'next-auth/react';
+// pages/api/ads/create.js
+import { v2 as cloudinary } from 'cloudinary';
+import { PrismaClient } from '@prisma/client';
+import formidable from 'formidable';
+import fs from 'fs';
 
-export default function PostAd() {
-  const router = useRouter();
-  const { data: session } = useSession();
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
-  const [image, setImage] = useState(null);
-  const [uploading, setUploading] = useState(false);
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!session) {
-      alert('You must be logged in to post an ad');
-      return;
+const prisma = new PrismaClient();
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  const form = formidable({
+    multiples: false,
+    keepExtensions: true,
+  });
+
+  form.parse(req, async (err, fields, files) => {
+    if (err) return res.status(500).json({ error: 'Error parsing form' });
+
+    try {
+      const file = files.image;
+      if (!file) return res.status(400).json({ error: 'No file uploaded' });
+
+      // Upload file to Cloudinary
+      const result = await cloudinary.uploader.upload(file.filepath);
+
+      // Create product in DB
+      const newProduct = await prisma.product.create({
+        data: {
+          title: fields.title,
+          description: fields.description,
+          price: parseFloat(fields.price),
+          imageUrl: result.secure_url,
+          user: {
+            connect: { email: fields.email }, // Or via session
+          },
+        },
+      });
+
+      res.status(200).json(newProduct);
+    } catch (error) {
+      console.error('❌ Cloudinary upload error:', error);
+      res.status(500).json({ error: 'Failed to upload image or create ad' });
     }
-
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('description', description);
-    formData.append('price', price);
-    formData.append('image', image);
-    formData.append('email', session.user.email); // You could also switch to using session ID
-
-    setUploading(true);
-    const res = await fetch('/api/ads/create', {
-      method: 'POST',
-      body: formData,
-    });
-
-    const data = await res.json();
-    setUploading(false);
-
-    if (res.ok) {
-      router.push('/dashboard');
-    } else {
-      alert(data.error || 'Failed to post ad');
-    }
-  };
-
-  return (
-    <div className="max-w-xl mx-auto mt-8">
-      <h1 className="text-2xl font-bold mb-4">Post New Ad</h1>
-      <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
-        <div>
-          <label className="block text-sm font-medium">Ad Title</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full border px-3 py-2 rounded"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium">Description</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full border px-3 py-2 rounded"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium">Price (€)</label>
-          <input
-            type="number"
-            step="0.01"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            className="w-full border px-3 py-2 rounded"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium">Upload Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setImage(e.target.files[0])}
-            className="w-full"
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={uploading}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          {uploading ? 'Posting...' : 'Post Ad'}
-        </button>
-      </form>
-    </div>
-  );
+  });
 }
