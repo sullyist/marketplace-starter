@@ -6,16 +6,23 @@ import { useState } from 'react';
 const prisma = new PrismaClient();
 
 export async function getServerSideProps(context) {
-  const { keyword = '', location = '', minPrice = '', maxPrice = '' } = context.query;
+  const { query } = context;
+  const filters = {};
 
-  const filters = {
-    AND: [
-      keyword ? { title: { contains: keyword, mode: 'insensitive' } } : {},
-      location ? { location: { contains: location, mode: 'insensitive' } } : {},
-      minPrice ? { price: { gte: parseFloat(minPrice) } } : {},
-      maxPrice ? { price: { lte: parseFloat(maxPrice) } } : {},
-    ],
-  };
+  if (query.keyword) {
+    filters.OR = [
+      { title: { contains: query.keyword, mode: 'insensitive' } },
+      { description: { contains: query.keyword, mode: 'insensitive' } },
+    ];
+  }
+  if (query.minPrice || query.maxPrice) {
+    filters.price = {};
+    if (query.minPrice) filters.price.gte = parseFloat(query.minPrice);
+    if (query.maxPrice) filters.price.lte = parseFloat(query.maxPrice);
+  }
+  if (query.location) {
+    filters.location = { contains: query.location, mode: 'insensitive' };
+  }
 
   const products = await prisma.product.findMany({
     where: filters,
@@ -24,22 +31,32 @@ export async function getServerSideProps(context) {
 
   return {
     props: {
-      products: JSON.parse(JSON.stringify(products)),
-      initialFilters: { keyword, location, minPrice, maxPrice },
+      initialProducts: JSON.parse(JSON.stringify(products)),
     },
   };
 }
 
-export default function Listings({ products, initialFilters }) {
-  const [filters, setFilters] = useState(initialFilters);
+export default function Listings({ initialProducts }) {
+  const [products, setProducts] = useState(initialProducts);
+  const [keyword, setKeyword] = useState('');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [location, setLocation] = useState('');
 
-  const handleChange = (e) => {
-    setFilters({ ...filters, [e.target.name]: e.target.value });
-  };
+  const handleFilter = async () => {
+    const params = new URLSearchParams();
+    if (keyword) params.append('keyword', keyword);
+    if (minPrice) params.append('minPrice', minPrice);
+    if (maxPrice) params.append('maxPrice', maxPrice);
+    if (location) params.append('location', location);
 
-  const applyFilters = () => {
-    const query = new URLSearchParams(filters).toString();
-    window.location.href = `/listings?${query}`;
+    const res = await fetch(`/listings?${params.toString()}`);
+    const html = await res.text();
+    const match = html.match(/__NEXT_DATA__" type="application\/json">(.*?)<\/script>/);
+    if (match) {
+      const data = JSON.parse(decodeURIComponent(match[1]));
+      setProducts(data.props.pageProps.initialProducts);
+    }
   };
 
   return (
@@ -48,67 +65,62 @@ export default function Listings({ products, initialFilters }) {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <input
-          name="keyword"
           type="text"
-          placeholder="Keyword"
-          value={filters.keyword}
-          onChange={handleChange}
+          placeholder="Search keyword..."
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
           className="border px-3 py-2 rounded"
         />
         <input
-          name="location"
-          type="text"
-          placeholder="Location"
-          value={filters.location}
-          onChange={handleChange}
-          className="border px-3 py-2 rounded"
-        />
-        <input
-          name="minPrice"
           type="number"
           placeholder="Min Price"
-          value={filters.minPrice}
-          onChange={handleChange}
+          value={minPrice}
+          onChange={(e) => setMinPrice(e.target.value)}
           className="border px-3 py-2 rounded"
         />
         <input
-          name="maxPrice"
           type="number"
           placeholder="Max Price"
-          value={filters.maxPrice}
-          onChange={handleChange}
+          value={maxPrice}
+          onChange={(e) => setMaxPrice(e.target.value)}
           className="border px-3 py-2 rounded"
         />
-        <button
-          onClick={applyFilters}
-          className="md:col-span-4 bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700"
-        >
-          Apply Filters
-        </button>
+        <input
+          type="text"
+          placeholder="Location"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          className="border px-3 py-2 rounded"
+        />
       </div>
+      <button
+        onClick={handleFilter}
+        className="mb-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      >
+        Apply Filters
+      </button>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {products.length === 0 ? (
-          <p className="text-gray-500 col-span-full">No listings found.</p>
-        ) : (
-          products.map((product) => (
-            <div key={product.id} className="border rounded shadow-sm p-4">
-              {product.imageUrl && (
-                <img
-                  src={product.imageUrl}
-                  alt={product.title}
-                  className="w-full h-48 object-cover mb-4 rounded"
-                />
-              )}
-              <h2 className="text-xl font-semibold">{product.title}</h2>
-              <p className="text-gray-600 mb-2">€{product.price}</p>
-              <p className="text-sm text-gray-600">Location: {product.location}</p>
-              <Link href={`/listings/${product.id}`} className="text-blue-600 hover:underline">
-                View details
-              </Link>
-            </div>
-          ))
-        )}
+        {products.map((product) => (
+          <div key={product.id} className="border rounded shadow-sm p-4">
+            {product.imageUrl && (
+              <img
+                src={product.imageUrl}
+                alt={product.title}
+                className="w-full h-48 object-cover mb-4 rounded"
+              />
+            )}
+            <h2 className="text-xl font-semibold">{product.title}</h2>
+            <p className="text-gray-600 mb-2">€{product.price}</p>
+            <p className="text-sm text-gray-600">Location: {product.location}</p>
+            <Link
+              href={`/listings/${product.id}`}
+              className="text-blue-600 hover:underline"
+            >
+              View details
+            </Link>
+          </div>
+        ))}
       </div>
     </div>
   );
