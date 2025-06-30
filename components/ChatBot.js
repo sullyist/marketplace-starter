@@ -1,71 +1,56 @@
 // components/ChatBot.js
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 
 export default function ChatBot() {
   const [messages, setMessages] = useState([
-    { from: 'bot', text: 'Hi! I can help you find a motorcycle or post an ad. What would you like to do?' },
+    { from: 'bot', text: 'Hi! How can I help you today?' },
   ]);
   const [input, setInput] = useState('');
-  const bottomRef = useRef(null);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSend = () => {
     if (!input.trim()) return;
 
-    const userMessage = { from: 'user', text: input.trim() };
-    setMessages((prev) => [...prev, userMessage]);
+    const userMessage = { from: 'user', text: input };
+    const botMessage = {
+      from: 'bot',
+      text: "I'm just a demo bot for now. Real AI features coming soon!",
+    };
 
-    const reply = generateReply(input.trim().toLowerCase());
-    setMessages((prev) => [...prev, userMessage, { from: 'bot', text: reply }]);
+    setMessages((prev) => [...prev, userMessage, botMessage]);
     setInput('');
   };
 
-  const generateReply = (text) => {
-    if (text.includes('find') || text.includes('search')) {
-      return 'You can search bikes from the listings page.';
-    }
-    if (text.includes('post') || text.includes('sell') || text.includes('advert')) {
-      return 'To post an ad, go to the "Post Ad" section from the navigation bar.';
-    }
-    if (text.includes('hello') || text.includes('hi')) {
-      return 'Hello! How can I assist you today?';
-    }
-    return "I'm not sure how to help with that. Try asking about listings or how to post.";
-  };
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
   return (
-    <div className="max-w-md mx-auto p-4 bg-white rounded shadow border">
-      <h2 className="text-xl font-bold mb-4">Search Assistant</h2>
-      <div className="h-64 overflow-y-auto border p-2 mb-4 bg-gray-50 rounded">
-        {messages.map((msg, i) => (
-          <div key={i} className={`mb-2 ${msg.from === 'user' ? 'text-right' : 'text-left'}`}>
-            <span
-              className={`inline-block px-3 py-2 rounded ${
-                msg.from === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-900'
-              }`}
-            >
-              {msg.text}
-            </span>
+    <div className="fixed bottom-4 right-4 w-80 bg-white border rounded-lg shadow-lg overflow-hidden">
+      <div className="p-4 h-64 overflow-y-auto space-y-2">
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            className={`text-sm p-2 rounded ${
+              msg.from === 'bot'
+                ? 'bg-gray-100 text-left'
+                : 'bg-blue-100 text-right'
+            }`}
+          >
+            {msg.text}
           </div>
         ))}
-        <div ref={bottomRef} />
       </div>
-      <form onSubmit={handleSubmit} className="flex space-x-2">
+      <div className="flex border-t">
         <input
-          type="text"
+          className="flex-1 px-3 py-2 text-sm outline-none"
+          placeholder="Type your question..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="flex-1 border px-3 py-2 rounded"
-          placeholder="Ask something..."
+          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
         />
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        <button
+          onClick={handleSend}
+          className="bg-blue-600 text-white px-4 text-sm hover:bg-blue-700"
+        >
           Send
         </button>
-      </form>
+      </div>
     </div>
   );
 }
