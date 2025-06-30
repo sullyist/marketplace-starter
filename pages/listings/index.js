@@ -1,27 +1,29 @@
 // pages/listings/index.js
 import { PrismaClient } from '@prisma/client';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 const prisma = new PrismaClient();
 
-export async function getServerSideProps(context) {
-  const { query } = context;
+export async function getServerSideProps({ query }) {
   const filters = {};
 
-  if (query.keyword) {
+  if (query.q) {
     filters.OR = [
-      { title: { contains: query.keyword, mode: 'insensitive' } },
-      { description: { contains: query.keyword, mode: 'insensitive' } },
+      { title: { contains: query.q, mode: 'insensitive' } },
+      { description: { contains: query.q, mode: 'insensitive' } },
     ];
   }
+
+  if (query.location) {
+    filters.location = { contains: query.location, mode: 'insensitive' };
+  }
+
   if (query.minPrice || query.maxPrice) {
     filters.price = {};
     if (query.minPrice) filters.price.gte = parseFloat(query.minPrice);
     if (query.maxPrice) filters.price.lte = parseFloat(query.maxPrice);
-  }
-  if (query.location) {
-    filters.location = { contains: query.location, mode: 'insensitive' };
   }
 
   const products = await prisma.product.findMany({
@@ -31,74 +33,94 @@ export async function getServerSideProps(context) {
 
   return {
     props: {
-      initialProducts: JSON.parse(JSON.stringify(products)),
+      products: JSON.parse(JSON.stringify(products)),
     },
   };
 }
 
-export default function Listings({ initialProducts }) {
-  const [products, setProducts] = useState(initialProducts);
-  const [keyword, setKeyword] = useState('');
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
-  const [location, setLocation] = useState('');
+export default function Listings({ products }) {
+  const router = useRouter();
+  const [filters, setFilters] = useState({
+    q: router.query.q || '',
+    location: router.query.location || '',
+    minPrice: router.query.minPrice || '',
+    maxPrice: router.query.maxPrice || '',
+  });
 
-  const handleFilter = async () => {
-    const params = new URLSearchParams();
-    if (keyword) params.append('keyword', keyword);
-    if (minPrice) params.append('minPrice', minPrice);
-    if (maxPrice) params.append('maxPrice', maxPrice);
-    if (location) params.append('location', location);
+  const handleChange = (e) => {
+    setFilters({ ...filters, [e.target.name]: e.target.value });
+  };
 
-    const res = await fetch(`/listings?${params.toString()}`);
-    const html = await res.text();
-    const match = html.match(/__NEXT_DATA__" type="application\/json">(.*?)<\/script>/);
-    if (match) {
-      const data = JSON.parse(decodeURIComponent(match[1]));
-      setProducts(data.props.pageProps.initialProducts);
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const query = Object.entries(filters)
+      .filter(([_, v]) => v)
+      .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
+      .join('&');
+    router.push(`/listings?${query}`);
   };
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-6">
       <h1 className="text-3xl font-bold mb-6">Motorcycle Listings</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <input
-          type="text"
-          placeholder="Search keyword..."
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          className="border px-3 py-2 rounded"
-        />
-        <input
-          type="number"
-          placeholder="Min Price"
-          value={minPrice}
-          onChange={(e) => setMinPrice(e.target.value)}
-          className="border px-3 py-2 rounded"
-        />
-        <input
-          type="number"
-          placeholder="Max Price"
-          value={maxPrice}
-          onChange={(e) => setMaxPrice(e.target.value)}
-          className="border px-3 py-2 rounded"
-        />
-        <input
-          type="text"
-          placeholder="Location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          className="border px-3 py-2 rounded"
-        />
+      <div className="bg-white shadow-sm rounded p-4 mb-6">
+        <form className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end" onSubmit={handleSubmit}>
+          <div>
+            <label className="text-sm font-medium text-gray-700">Keyword</label>
+            <input
+              type="text"
+              name="q"
+              value={filters.q}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700">Location</label>
+            <input
+              type="text"
+              name="location"
+              value={filters.location}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700">Min Price (€)</label>
+            <input
+              type="number"
+              step="0.01"
+              name="minPrice"
+              value={filters.minPrice}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700">Max Price (€)</label>
+            <input
+              type="number"
+              step="0.01"
+              name="maxPrice"
+              value={filters.maxPrice}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="md:col-span-4 text-right">
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+            >
+              Search
+            </button>
+            <Link href="/listings">
+              <a className="ml-4 text-sm text-blue-600 hover:underline">Reset filters</a>
+            </Link>
+          </div>
+        </form>
       </div>
-      <button
-        onClick={handleFilter}
-        className="mb-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        Apply Filters
-      </button>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {products.map((product) => (
@@ -113,11 +135,8 @@ export default function Listings({ initialProducts }) {
             <h2 className="text-xl font-semibold">{product.title}</h2>
             <p className="text-gray-600 mb-2">€{product.price}</p>
             <p className="text-sm text-gray-600">Location: {product.location}</p>
-            <Link
-              href={`/listings/${product.id}`}
-              className="text-blue-600 hover:underline"
-            >
-              View details
+            <Link href={`/listings/${product.id}`}>
+              <a className="text-blue-600 hover:underline">View details</a>
             </Link>
           </div>
         ))}
