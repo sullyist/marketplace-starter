@@ -2,8 +2,7 @@
 import { v2 as cloudinary } from 'cloudinary';
 import { PrismaClient } from '@prisma/client';
 import formidable from 'formidable';
-import fs from 'fs/promises';
-import path from 'path';
+import fs from 'fs';
 
 export const config = {
   api: {
@@ -25,7 +24,7 @@ export default async function handler(req, res) {
   const form = formidable({
     multiples: false,
     keepExtensions: true,
-    uploadDir: '/tmp',
+    uploadDir: '/tmp', // for Vercel compatibility
   });
 
   form.parse(req, async (err, fields, files) => {
@@ -33,12 +32,13 @@ export default async function handler(req, res) {
 
     try {
       const file = files.image;
-      if (!file) return res.status(400).json({ error: 'No file uploaded' });
+      if (!file || !file.filepath) {
+        console.error('❌ No valid file found:', file);
+        return res.status(400).json({ error: 'Invalid or missing file' });
+      }
 
-      // Upload to Cloudinary
       const result = await cloudinary.uploader.upload(file.filepath);
 
-      // Create product in DB
       const newProduct = await prisma.product.create({
         data: {
           title: fields.title[0],
