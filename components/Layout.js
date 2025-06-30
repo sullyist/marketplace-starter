@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
+import ChatBot from './ChatBot'; // Adjust path if needed
 
 export default function Layout({ children }) {
   const { data: session } = useSession();
