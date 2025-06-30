@@ -48,7 +48,10 @@ export default function Layout({ children }) {
         </div>
       </nav>
 
-      <main className="p-6 max-w-4xl mx-auto">{children}</main>
+      <main className="p-6 max-w-4xl mx-auto">
+  {children}
+  <ChatBot />
+</main>
     </div>
   );
 }
