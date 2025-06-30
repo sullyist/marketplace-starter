@@ -23,6 +23,7 @@ model User {
 model Product {
   id          String   @id @default(cuid())
   title       String
+  makeModel   String
   description String
   price       Float
   imageUrl    String
