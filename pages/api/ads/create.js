@@ -52,6 +52,7 @@ export default async function handler(req, res) {
           description: fields.description?.[0] || '',
           price: parseFloat(fields.price?.[0] || '0'),
           imageUrl: result.secure_url,
+          location: fields.location,
           user: {
             connect: { email: fields.email?.[0] },
           },

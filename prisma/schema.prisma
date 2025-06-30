@@ -26,6 +26,7 @@ model Product {
   description String
   price       Float
   imageUrl    String
+  location String @default("Unknown")
   user        User     @relation(fields: [userId], references: [id])
   userId      String
   createdAt   DateTime @default(now())

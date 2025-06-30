@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react';
 export default function PostAd() {
   const router = useRouter();
   const { data: session } = useSession();
-
+  const [location, setLocation] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
@@ -22,6 +22,7 @@ export default function PostAd() {
     formData.append('price', price);
     formData.append('image', image);
     formData.append('email', session.user.email);
+    formData.append('location', location);
 
     const res = await fetch('/api/ads/create', {
       method: 'POST',
@@ -67,6 +68,16 @@ export default function PostAd() {
             step="0.01"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium">Location</label>
+          <input
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
             className="w-full border px-3 py-2 rounded"
             required
           />
