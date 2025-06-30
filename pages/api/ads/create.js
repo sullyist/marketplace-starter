@@ -47,17 +47,18 @@ export default async function handler(req, res) {
       console.log('✅ Cloudinary result:', result);
 
       const newProduct = await prisma.product.create({
-        data: {
-          title: fields.title?.[0] || '',
-          description: fields.description?.[0] || '',
-          price: parseFloat(fields.price?.[0] || '0'),
-          imageUrl: result.secure_url,
-          location: fields.location,
-          user: {
-            connect: { email: fields.email?.[0] },
-          },
-        },
-      });
+      data: {
+      title: fields.title,
+      makeModel: fields.makeModel,
+      description: fields.description,
+      price: parseFloat(fields.price),
+      location: fields.location,
+      imageUrl: result.secure_url,
+      user: {
+      connect: { email: fields.email },
+    },
+  },
+});
 
       return res.status(200).json(newProduct);
     } catch (error) {

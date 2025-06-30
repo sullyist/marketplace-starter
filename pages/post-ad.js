@@ -8,10 +8,11 @@ export default function PostAd() {
   const { data: session } = useSession();
 
   const [title, setTitle] = useState('');
+  const [makeModel, setMakeModel] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
+  const [location, setLocation] = useState('');
   const [image, setImage] = useState(null);
-  const [makeModel, setMakeModel] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,11 +20,12 @@ export default function PostAd() {
 
     const formData = new FormData();
     formData.append('title', title);
+    formData.append('makeModel', makeModel);
     formData.append('description', description);
     formData.append('price', price);
+    formData.append('location', location);
     formData.append('image', image);
     formData.append('email', session.user.email);
-    formData.append('makeModel', makeModel);
 
     const res = await fetch('/api/ads/create', {
       method: 'POST',
@@ -54,6 +56,26 @@ export default function PostAd() {
           />
         </div>
         <div>
+          <label className="block text-sm font-medium">Make & Model</label>
+          <input
+            type="text"
+            value={makeModel}
+            onChange={(e) => setMakeModel(e.target.value)}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium">Location</label>
+          <input
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+        </div>
+        <div>
           <label className="block text-sm font-medium">Description</label>
           <textarea
             value={description}
@@ -72,23 +94,6 @@ export default function PostAd() {
             className="w-full border px-3 py-2 rounded"
             required
           />
-        </div>
-        <div>
-          <label className="block text-sm font-medium">Make & Model</label>
-          <select
-            value={makeModel}
-            onChange={(e) => setMakeModel(e.target.value)}
-            className="w-full border px-3 py-2 rounded"
-            required
-          >
-            <option value="">Select a bike</option>
-            <option value="Honda CBR500R">Honda CBR500R</option>
-            <option value="Yamaha MT-07">Yamaha MT-07</option>
-            <option value="Kawasaki Ninja 400">Kawasaki Ninja 400</option>
-            <option value="Suzuki GSX-R600">Suzuki GSX-R600</option>
-            <option value="BMW S1000RR">BMW S1000RR</option>
-            <option value="Other">Other</option>
-          </select>
         </div>
         <div>
           <label className="block text-sm font-medium">Image</label>
