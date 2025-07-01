@@ -6,10 +6,10 @@ export default function Dashboard() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    if (session?.user?.email) {
-      fetch(`/api/products/user/${session.user.email}`)
-        .then(res => res.json())
-        .then(setProducts);
+  if (session?.user?.id) {
+    fetch(`/api/products/user/${session.user.id}`)
+      .then(res => res.json())
+      .then(setProducts);
     }
   }, [session]);
 
