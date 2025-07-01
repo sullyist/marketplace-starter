@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     if (err) return res.status(500).json({ error: 'Error parsing form' });
 
     try {
-      const file = files.image;
+      const file = Array.isArray(files.image) ? files.image[0] : files.image;
       if (!file || !file.filepath) {
         console.error('❌ No valid file found:', file);
         return res.status(400).json({ error: 'Invalid or missing file' });
