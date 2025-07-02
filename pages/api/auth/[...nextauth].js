@@ -14,37 +14,40 @@ export default NextAuth({
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        
-
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
 
-        
-
-        if (!user || !user.password) {
-          
-          return null;
-        }
+        if (!user || !user.password) return null;
 
         const isValid = await compare(credentials.password, user.password);
-        
-
-        if (!isValid) {
-          
-          return null;
-        }
+        if (!isValid) return null;
 
         return {
           id: user.id,
           name: user.name,
           email: user.email,
+          role: user.role, // ✅ Include role here
         };
-      }
-    })
+      },
+    }),
   ],
   session: {
     strategy: 'jwt',
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = user.role; // ✅ Store role in token
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.role = token.role; // ✅ Attach role to session
+      }
+      return session;
+    },
   },
   pages: {
     signIn: '/login',
