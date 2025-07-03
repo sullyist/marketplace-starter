@@ -17,6 +17,7 @@ model User {
   role      String    @default("buyer")
   products  Product[]
   orders    Order[]
+  resetTokens PasswordResetToken[]
   createdAt DateTime  @default(now())
 }
 
@@ -42,3 +43,13 @@ model Order {
   buyerId   String
   createdAt DateTime @default(now())
 }
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
