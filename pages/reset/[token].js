@@ -1,8 +1,8 @@
-// pages/reset-password.js
+// pages/reset/[token].js
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 
-export default function ResetPassword() {
+export default function ResetPasswordPage() {
   const router = useRouter();
   const { token } = router.query;
 
@@ -11,26 +11,29 @@ export default function ResetPassword() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const isStrongPassword = (pw) =>
-    pw.length >= 8 &&
-    /[A-Z]/.test(pw) &&
-    /[a-z]/.test(pw) &&
-    /\d/.test(pw) &&
-    /[!@#$%^&*]/.test(pw);
+  const validatePassword = (password) => {
+    return (
+      password.length >= 8 &&
+      /[a-z]/.test(password) &&
+      /[A-Z]/.test(password) &&
+      /[0-9]/.test(password) &&
+      /[^A-Za-z0-9]/.test(password)
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
 
-    if (!isStrongPassword(password)) {
-      return setError(
-        'Password must be at least 8 characters and include upper/lower case, number, and special character.'
-      );
+    if (!validatePassword(password)) {
+      setError('Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.');
+      return;
     }
 
     if (password !== confirmPassword) {
-      return setError('Passwords do not match.');
+      setError('Passwords do not match.');
+      return;
     }
 
     const res = await fetch('/api/auth/reset-password', {
@@ -42,24 +45,23 @@ export default function ResetPassword() {
     const data = await res.json();
 
     if (res.ok) {
-      setSuccess('Password successfully reset. You can now login.');
-      setTimeout(() => router.push('/login'), 2000);
+      setSuccess('Password reset successfully. You can now log in.');
     } else {
       setError(data.error || 'Something went wrong.');
     }
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow">
-      <h1 className="text-xl font-bold mb-4">Reset Your Password</h1>
+    <div className="max-w-md mx-auto p-6">
+      <h1 className="text-xl font-bold mb-4">Reset Password</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium">New Password</label>
           <input
             type="password"
-            className="w-full border px-3 py-2 rounded"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            className="w-full border px-3 py-2 rounded"
             required
           />
         </div>
@@ -67,9 +69,9 @@ export default function ResetPassword() {
           <label className="block text-sm font-medium">Confirm Password</label>
           <input
             type="password"
-            className="w-full border px-3 py-2 rounded"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+            className="w-full border px-3 py-2 rounded"
             required
           />
         </div>
@@ -77,7 +79,7 @@ export default function ResetPassword() {
         {success && <p className="text-green-600 text-sm">{success}</p>}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           Reset Password
         </button>
