@@ -3,6 +3,16 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
 
+const counties = [
+  'Dublin', 'Cork', 'Galway', 'Limerick', 'Kerry', 'Mayo',
+  'Donegal', 'Wexford', 'Kilkenny', 'Waterford', 'Clare', 'Louth'
+];
+
+const bikeMakes = [
+  'Honda', 'Yamaha', 'Kawasaki', 'Suzuki', 'BMW', 'Ducati',
+  'Triumph', 'KTM', 'Harley-Davidson'
+];
+
 export default function PostAd() {
   const router = useRouter();
   const { data: session } = useSession();
@@ -57,23 +67,31 @@ export default function PostAd() {
         </div>
         <div>
           <label className="block text-sm font-medium">Make & Model</label>
-          <input
-            type="text"
+          <select
             value={makeModel}
             onChange={(e) => setMakeModel(e.target.value)}
             className="w-full border px-3 py-2 rounded"
             required
-          />
+          >
+            <option value="">Select a make</option>
+            {bikeMakes.map((make) => (
+              <option key={make} value={make}>{make}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="block text-sm font-medium">Location</label>
-          <input
-            type="text"
+          <select
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             className="w-full border px-3 py-2 rounded"
             required
-          />
+          >
+            <option value="">Select a county</option>
+            {counties.map((county) => (
+              <option key={county} value={county}>{county}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="block text-sm font-medium">Description</label>
