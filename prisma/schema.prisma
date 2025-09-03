@@ -26,6 +26,8 @@ model Product {
   title       String
   makeModel   String
   description String
+  engineSize String
+  bikeType   String
   price       Float
   imageUrl    String
   location String @default("Unknown")
