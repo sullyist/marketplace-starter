@@ -26,7 +26,8 @@ const BIKE_TYPES = [
 export default function PostAd() {
   const router = useRouter();
   const [title, setTitle] = useState("");
-  const [makeModel, setMakeModel] = useState("");
+  const [make, setMake] = useState("");
+  const [model, setModel] = useState("");
   const [price, setPrice] = useState("");
   const [engineSize, setEngineSize] = useState("");
   const [bikeType, setBikeType] = useState("");
@@ -45,7 +46,8 @@ export default function PostAd() {
     try {
       const payload = {
         title,
-        makeModel,
+        make,
+        model,
         price,
         engineSize,
         bikeType,
@@ -103,16 +105,29 @@ export default function PostAd() {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Make & Model *</label>
-            <input
-              type="text"
-              placeholder="e.g., Honda CBR600RR"
-              value={makeModel}
-              onChange={(e) => setMakeModel(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Make *</label>
+              <input
+                type="text"
+                placeholder="e.g., Honda"
+                value={make}
+                onChange={(e) => setMake(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Model *</label>
+              <input
+                type="text"
+                placeholder="e.g., CBR600RR"
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

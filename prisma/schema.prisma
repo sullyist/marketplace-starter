@@ -24,7 +24,9 @@ model User {
 model Product {
   id          String   @id @default(cuid())
   title       String
-  makeModel   String
+  make        String   @default("Unknown")
+  model       String   @default("Unknown")
+  makeModel   String   @default("Unknown")
   description String
   engineSize String @default("Unknown")
   bikeType   String @default("Unknown")
