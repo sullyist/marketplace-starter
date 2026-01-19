@@ -126,7 +126,7 @@ export default function Home({ recentListings }) {
                     />
                     <div className="p-6">
                       <h3 className="text-xl font-semibold mb-2">{listing.title}</h3>
-                      <p className="text-gray-600 mb-2">{listing.makeModel}</p>
+                      <p className="text-gray-600 mb-2">{listing.make} {listing.model}</p>
                       <div className="flex justify-between items-center">
                         <span className="text-2xl font-bold text-blue-600">
                           €{listing.price.toLocaleString()}

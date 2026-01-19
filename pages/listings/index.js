@@ -54,7 +54,8 @@ export async function getServerSideProps(context) {
     ...(search && {
       OR: [
         { title: { contains: search, mode: 'insensitive' } },
-        { makeModel: { contains: search, mode: 'insensitive' } },
+        { make: { contains: search, mode: 'insensitive' } },
+        { model: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
       ],
     }),
@@ -238,7 +239,10 @@ export default function Listings({ products, initialQuery }) {
                       {product.title}
                     </h2>
                     <p className="text-gray-600 mb-1">
-                      <span className="font-medium">Make & Model:</span> {product.makeModel}
+                      <span className="font-medium">Make:</span> {product.make}
+                    </p>
+                    <p className="text-gray-600 mb-1">
+                      <span className="font-medium">Model:</span> {product.model}
                     </p>
                     <p className="text-gray-600 mb-1">
                       <span className="font-medium">Type:</span> {product.bikeType}

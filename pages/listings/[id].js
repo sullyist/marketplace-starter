@@ -42,7 +42,7 @@ export default function ListingDetail({ product }) {
             {product.title}
           </h1>
           <p className="text-xl text-blue-100 mt-2">
-            {product.makeModel}
+            {product.make} {product.model}
           </p>
         </div>
       </section>
@@ -80,8 +80,12 @@ export default function ListingDetail({ product }) {
               <h2 className="text-2xl font-bold mb-4">Specifications</h2>
               <div className="space-y-3">
                 <div className="flex justify-between border-b pb-2">
-                  <span className="font-medium text-gray-700">Make & Model:</span>
-                  <span className="text-gray-900">{product.makeModel}</span>
+                  <span className="font-medium text-gray-700">Make:</span>
+                  <span className="text-gray-900">{product.make}</span>
+                </div>
+                <div className="flex justify-between border-b pb-2">
+                  <span className="font-medium text-gray-700">Model:</span>
+                  <span className="text-gray-900">{product.model}</span>
                 </div>
                 <div className="flex justify-between border-b pb-2">
                   <span className="font-medium text-gray-700">Type:</span>
