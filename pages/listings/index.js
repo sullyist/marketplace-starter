@@ -37,12 +37,12 @@ const categoryCards = [
   { type: 'Electric', icon: '⚡', color: 'from-emerald-500 to-teal-600' },
 ];
 
-const engineSizes = ['125', '250', '500', '600', '750', '1000', '1200'];
-
 export async function getServerSideProps(context) {
   const { query } = context;
   const {
     search = '',
+    make = '',
+    model = '',
     minPrice = '',
     maxPrice = '',
     location = '',
@@ -59,11 +59,13 @@ export async function getServerSideProps(context) {
         { description: { contains: search, mode: 'insensitive' } },
       ],
     }),
+    ...(make && { make: { contains: make, mode: 'insensitive' } }),
+    ...(model && { model: { contains: model, mode: 'insensitive' } }),
     ...(location && { location: { contains: location, mode: 'insensitive' } }),
     ...(minPrice && { price: { gte: parseFloat(minPrice) } }),
     ...(maxPrice && { price: { lte: parseFloat(maxPrice) } }),
     ...(bikeType && { bikeType }),
-    ...(engineSize && { engineSize: parseInt(engineSize) }),
+    ...(engineSize && { engineSize: { contains: engineSize } }),
   };
 
   const products = await prisma.product.findMany({
@@ -74,13 +76,15 @@ export async function getServerSideProps(context) {
   return {
     props: {
       products: JSON.parse(JSON.stringify(products)),
-      initialQuery: { search, minPrice, maxPrice, location, bikeType, engineSize },
+      initialQuery: { search, make, model, minPrice, maxPrice, location, bikeType, engineSize },
     },
   };
 }
 
 export default function Listings({ products, initialQuery }) {
   const [search, setSearch] = useState(initialQuery.search || '');
+  const [make, setMake] = useState(initialQuery.make || '');
+  const [model, setModel] = useState(initialQuery.model || '');
   const [location, setLocation] = useState(initialQuery.location || '');
   const [minPrice, setMinPrice] = useState(initialQuery.minPrice || '');
   const [maxPrice, setMaxPrice] = useState(initialQuery.maxPrice || '');
@@ -91,6 +95,8 @@ export default function Listings({ products, initialQuery }) {
     e.preventDefault();
     const params = new URLSearchParams();
     if (search) params.append('search', search);
+    if (make) params.append('make', make);
+    if (model) params.append('model', model);
     if (location) params.append('location', location);
     if (minPrice) params.append('minPrice', minPrice);
     if (maxPrice) params.append('maxPrice', maxPrice);
@@ -152,63 +158,77 @@ export default function Listings({ products, initialQuery }) {
       {/* Filters Section */}
       <section className="bg-white shadow-md py-8">
         <div className="max-w-6xl mx-auto px-6">
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <input
-              type="text"
-              placeholder="Search title or model"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="text"
-              placeholder="Location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="number"
-              placeholder="Min Price"
-              value={minPrice}
-              onChange={(e) => setMinPrice(e.target.value)}
-              className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="number"
-              placeholder="Max Price"
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(e.target.value)}
-              className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <select
-              value={bikeType}
-              onChange={(e) => setBikeType(e.target.value)}
-              className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Types</option>
-              {bikeTypes.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-            <select
-              value={engineSize}
-              onChange={(e) => setEngineSize(e.target.value)}
-              className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Engine Sizes</option>
-              {engineSizes.map((size) => (
-                <option key={size} value={size}>
-                  {size}cc
-                </option>
-              ))}
-            </select>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <input
+                type="text"
+                placeholder="Search (title, description)"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="text"
+                placeholder="Make (e.g., Honda)"
+                value={make}
+                onChange={(e) => setMake(e.target.value)}
+                className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="text"
+                placeholder="Model (e.g., CBR600RR)"
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="text"
+                placeholder="Location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <input
+                type="number"
+                placeholder="Min Price (€)"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+                className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="number"
+                placeholder="Max Price (€)"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="text"
+                placeholder="Engine Size (e.g., 600)"
+                value={engineSize}
+                onChange={(e) => setEngineSize(e.target.value)}
+                className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <select
+                value={bikeType}
+                onChange={(e) => setBikeType(e.target.value)}
+                className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Types</option>
+                {bikeTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             <button
               type="submit"
-              className="col-span-1 md:col-span-3 lg:col-span-6 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold"
+              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold"
             >
               Apply Filters
             </button>
