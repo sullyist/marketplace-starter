@@ -129,7 +129,7 @@ export default function Home({ recentListings }) {
                       <p className="text-gray-600 mb-2">{listing.makeModel}</p>
                       <div className="flex justify-between items-center">
                         <span className="text-2xl font-bold text-blue-600">
-                          ${listing.price.toLocaleString()}
+                          €{listing.price.toLocaleString()}
                         </span>
                         <span className="text-sm text-gray-500">{listing.location}</span>
                       </div>
