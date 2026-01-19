@@ -26,6 +26,17 @@ const bikeTypes = [
   'Moped',
 ];
 
+const categoryCards = [
+  { type: 'Sport', icon: '🏁', color: 'from-red-500 to-orange-500' },
+  { type: 'Cruiser', icon: '🛣️', color: 'from-purple-500 to-pink-500' },
+  { type: 'Adventure', icon: '🏔️', color: 'from-green-500 to-teal-500' },
+  { type: 'Touring', icon: '🗺️', color: 'from-blue-500 to-indigo-500' },
+  { type: 'Naked', icon: '⚡', color: 'from-cyan-500 to-blue-600' },
+  { type: 'Scooter', icon: '🛵', color: 'from-pink-500 to-rose-500' },
+  { type: 'Cafe Racer', icon: '☕', color: 'from-amber-600 to-yellow-700' },
+  { type: 'Electric', icon: '⚡', color: 'from-emerald-500 to-teal-600' },
+];
+
 const engineSizes = ['125', '250', '500', '600', '750', '1000', '1200'];
 
 export async function getServerSideProps(context) {
@@ -99,6 +110,41 @@ export default function Listings({ products, initialQuery }) {
           <p className="text-xl text-blue-100">
             {products.length} {products.length === 1 ? 'motorcycle' : 'motorcycles'} available
           </p>
+        </div>
+      </section>
+
+      {/* Popular Categories Section */}
+      <section className="bg-white border-b py-8">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-2xl font-bold mb-6">Browse by Category</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+            {categoryCards.map((category) => (
+              <Link
+                key={category.type}
+                href={`/listings?bikeType=${category.type}`}
+                className="group"
+              >
+                <div className="bg-white border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-all duration-200 overflow-hidden">
+                  <div className={`bg-gradient-to-br ${category.color} p-4 text-center`}>
+                    <div className="text-3xl mb-1">{category.icon}</div>
+                  </div>
+                  <div className="p-2 text-center">
+                    <span className="text-xs font-medium text-gray-700 group-hover:text-blue-600 transition">
+                      {category.type}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <div className="text-center mt-4">
+            <Link
+              href="/categories"
+              className="text-blue-600 hover:text-blue-800 font-semibold text-sm"
+            >
+              View All Categories →
+            </Link>
+          </div>
         </div>
       </section>
 
