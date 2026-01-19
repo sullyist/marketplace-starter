@@ -128,8 +128,8 @@ export default function Listings({ products, initialQuery }) {
                   <div className={`bg-gradient-to-br ${category.color} p-4 text-center`}>
                     <div className="text-3xl mb-1">{category.icon}</div>
                   </div>
-                  <div className="p-2 text-center">
-                    <span className="text-xs font-medium text-gray-700 group-hover:text-blue-600 transition">
+                  <div className="p-2 text-center min-h-[2.5rem] flex items-center justify-center">
+                    <span className="text-xs font-medium text-gray-700 group-hover:text-blue-600 transition break-words leading-tight">
                       {category.type}
                     </span>
                   </div>

@@ -90,7 +90,7 @@ const bikeCategories = [
   {
     type: 'Vintage/Classic',
     description: 'Older collectible motorcycles with timeless appeal',
-    image: 'https://placehold.co/400x300/57534e/white?text=Vintage',
+    image: 'https://placehold.co/400x300/57534e/white?text=Classic',
   },
   {
     type: 'Moped',
@@ -132,7 +132,7 @@ export default function Categories() {
                     className="w-full h-48 object-cover"
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                    <h2 className="text-2xl font-bold text-white">
+                    <h2 className="text-2xl font-bold text-white break-words">
                       {category.type}
                     </h2>
                   </div>
