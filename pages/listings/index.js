@@ -89,93 +89,149 @@ export default function Listings({ products, initialQuery }) {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
-      <h1 className="text-3xl font-bold mb-6">Motorcycle Listings</h1>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header Section */}
+      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            Browse Motorcycles
+          </h1>
+          <p className="text-xl text-blue-100">
+            {products.length} {products.length === 1 ? 'motorcycle' : 'motorcycles'} available
+          </p>
+        </div>
+      </section>
 
-      <form onSubmit={handleSubmit} className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-        <input
-          type="text"
-          placeholder="Search title or model"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border px-3 py-2 rounded"
-        />
-        <input
-          type="text"
-          placeholder="Location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          className="border px-3 py-2 rounded"
-        />
-        <input
-          type="number"
-          placeholder="Min Price"
-          value={minPrice}
-          onChange={(e) => setMinPrice(e.target.value)}
-          className="border px-3 py-2 rounded"
-        />
-        <input
-          type="number"
-          placeholder="Max Price"
-          value={maxPrice}
-          onChange={(e) => setMaxPrice(e.target.value)}
-          className="border px-3 py-2 rounded"
-        />
-        <select
-          value={bikeType}
-          onChange={(e) => setBikeType(e.target.value)}
-          className="border px-3 py-2 rounded"
-        >
-          <option value="">All Types</option>
-          {bikeTypes.map((type) => (
-            <option key={type} value={type}>
-              {type}
-            </option>
-          ))}
-        </select>
-        <select
-          value={engineSize}
-          onChange={(e) => setEngineSize(e.target.value)}
-          className="border px-3 py-2 rounded"
-        >
-          <option value="">All Engine Sizes</option>
-          {engineSizes.map((size) => (
-            <option key={size} value={size}>
-              {size}cc
-            </option>
-          ))}
-        </select>
+      {/* Filters Section */}
+      <section className="bg-white shadow-md py-8">
+        <div className="max-w-6xl mx-auto px-6">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <input
+              type="text"
+              placeholder="Search title or model"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="text"
+              placeholder="Location"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="number"
+              placeholder="Min Price"
+              value={minPrice}
+              onChange={(e) => setMinPrice(e.target.value)}
+              className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="number"
+              placeholder="Max Price"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+              className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <select
+              value={bikeType}
+              onChange={(e) => setBikeType(e.target.value)}
+              className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">All Types</option>
+              {bikeTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+            <select
+              value={engineSize}
+              onChange={(e) => setEngineSize(e.target.value)}
+              className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">All Engine Sizes</option>
+              {engineSizes.map((size) => (
+                <option key={size} value={size}>
+                  {size}cc
+                </option>
+              ))}
+            </select>
 
-        <button
-          type="submit"
-          className="col-span-1 md:col-span-4 bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-        >
-          Apply Filters
-        </button>
-      </form>
+            <button
+              type="submit"
+              className="col-span-1 md:col-span-3 lg:col-span-6 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold"
+            >
+              Apply Filters
+            </button>
+          </form>
+        </div>
+      </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {products.map((product) => (
-          <div key={product.id} className="border rounded shadow-sm p-4">
-            {product.imageUrl && (
-              <img
-                src={product.imageUrl}
-                alt={product.title}
-                className="w-full h-48 object-cover mb-4 rounded"
-              />
-            )}
-            <h2 className="text-xl font-semibold">{product.title}</h2>
-            <p className="text-sm text-gray-600">Make & Model: {product.makeModel}</p>
-            <p className="text-sm text-gray-600">Location: {product.location}</p>
-            <p className="text-sm text-gray-600">Engine Size: {product.engineSize}cc</p>
-            <p className="text-sm text-gray-600">Type: {product.bikeType}</p>
-            <p className="text-gray-800 font-medium mb-2">€{product.price}</p>
-            <Link href={`/listings/${product.id}`} className="text-blue-600 hover:underline">
-              View details
+      {/* Listings Grid */}
+      <section className="max-w-6xl mx-auto px-6 py-12">
+        {products.length > 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.map((product) => (
+              <Link
+                key={product.id}
+                href={`/listings/${product.id}`}
+                className="group"
+              >
+                <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden h-full">
+                  {product.imageUrl && (
+                    <img
+                      src={product.imageUrl}
+                      alt={product.title}
+                      className="w-full h-48 object-cover"
+                    />
+                  )}
+                  <div className="p-6">
+                    <h2 className="text-xl font-semibold mb-2 group-hover:text-blue-600 transition">
+                      {product.title}
+                    </h2>
+                    <p className="text-gray-600 mb-1">
+                      <span className="font-medium">Make & Model:</span> {product.makeModel}
+                    </p>
+                    <p className="text-gray-600 mb-1">
+                      <span className="font-medium">Type:</span> {product.bikeType}
+                    </p>
+                    <p className="text-gray-600 mb-1">
+                      <span className="font-medium">Engine:</span> {product.engineSize}cc
+                    </p>
+                    <p className="text-gray-600 mb-3">
+                      <span className="font-medium">Location:</span> {product.location}
+                    </p>
+                    <div className="flex justify-between items-center border-t pt-3">
+                      <span className="text-2xl font-bold text-blue-600">
+                        €{product.price.toLocaleString()}
+                      </span>
+                      <span className="text-blue-600 font-semibold group-hover:text-blue-800 transition">
+                        View Details →
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">🔍</div>
+            <h2 className="text-2xl font-bold mb-2">No motorcycles found</h2>
+            <p className="text-gray-600 mb-6">
+              Try adjusting your filters or browse all listings
+            </p>
+            <Link
+              href="/listings"
+              className="inline-block px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+            >
+              Clear Filters
             </Link>
           </div>
-        ))}
-      </div>
+        )}
+      </section>
     </div>
   );
 }
