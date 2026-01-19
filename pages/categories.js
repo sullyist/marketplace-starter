@@ -5,116 +5,97 @@ const bikeCategories = [
   {
     type: 'Sport',
     description: 'High-performance motorcycles built for speed and agility',
-    icon: '🏁',
-    color: 'from-red-500 to-orange-500',
+    image: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=400&h=300&fit=crop',
   },
   {
     type: 'Cruiser',
     description: 'Comfortable, laid-back riding position for long distances',
-    icon: '🛣️',
-    color: 'from-purple-500 to-pink-500',
+    image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=400&h=300&fit=crop',
   },
   {
     type: 'Adventure',
     description: 'Versatile bikes designed for both on-road and off-road',
-    icon: '🏔️',
-    color: 'from-green-500 to-teal-500',
+    image: 'https://images.unsplash.com/photo-1609630875171-b1321377ee65?w=400&h=300&fit=crop',
   },
   {
     type: 'Touring',
     description: 'Long-distance comfort with storage and amenities',
-    icon: '🗺️',
-    color: 'from-blue-500 to-indigo-500',
+    image: 'https://images.unsplash.com/photo-1623121963734-d5999a59a97f?w=400&h=300&fit=crop',
   },
   {
     type: 'Standard',
     description: 'Upright seating position, perfect for everyday riding',
-    icon: '🏍️',
-    color: 'from-gray-600 to-gray-800',
+    image: 'https://images.unsplash.com/photo-1609103092597-a68d2f87c5c9?w=400&h=300&fit=crop',
   },
   {
     type: 'Dual-Sport',
     description: 'Street-legal bikes capable of off-road adventures',
-    icon: '⛰️',
-    color: 'from-yellow-500 to-orange-600',
+    image: 'https://images.unsplash.com/photo-1558980664-1db506751ab4?w=400&h=300&fit=crop',
   },
   {
     type: 'Naked',
     description: 'Minimal fairings, exposed engine, raw riding experience',
-    icon: '⚡',
-    color: 'from-cyan-500 to-blue-600',
+    image: 'https://images.unsplash.com/photo-1568772607822-e10f5e0eb05c?w=400&h=300&fit=crop',
   },
   {
     type: 'Scooter',
     description: 'Easy to ride, automatic transmission, urban mobility',
-    icon: '🛵',
-    color: 'from-pink-500 to-rose-500',
+    image: 'https://images.unsplash.com/photo-1583979620597-c2f9b2d54e7f?w=400&h=300&fit=crop',
   },
   {
     type: 'Cafe Racer',
     description: 'Vintage-inspired minimalist styling with retro cool aesthetics',
-    icon: '☕',
-    color: 'from-amber-600 to-yellow-700',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
   },
   {
     type: 'Bobber',
     description: 'Stripped-down custom cruisers with minimal bodywork',
-    icon: '🔧',
-    color: 'from-slate-700 to-zinc-800',
+    image: 'https://images.unsplash.com/photo-1599819177626-c0c3dd4eaa6a?w=400&h=300&fit=crop',
   },
   {
     type: 'Chopper',
     description: 'Extended front forks, custom builds, classic American style',
-    icon: '🦅',
-    color: 'from-orange-600 to-red-700',
+    image: 'https://images.unsplash.com/photo-1558980663-3685c1d673c4?w=400&h=300&fit=crop',
   },
   {
     type: 'Streetfighter',
     description: 'Aggressive naked sport bikes with upright riding position',
-    icon: '💪',
-    color: 'from-red-600 to-pink-600',
+    image: 'https://images.unsplash.com/photo-1609069497226-47e0110e4ac0?w=400&h=300&fit=crop',
   },
   {
     type: 'Supermoto',
     description: 'Dual-sport bikes with street tires, great for urban riding',
-    icon: '🎯',
-    color: 'from-lime-500 to-green-600',
+    image: 'https://images.unsplash.com/photo-1568772607733-91956d25e7ba?w=400&h=300&fit=crop',
   },
   {
     type: 'Electric',
     description: 'Zero emissions electric motorcycles for eco-conscious riders',
-    icon: '⚡',
-    color: 'from-emerald-500 to-teal-600',
+    image: 'https://images.unsplash.com/photo-1622551674676-e6c3b1c6e87f?w=400&h=300&fit=crop',
   },
   {
     type: 'Sport Touring',
     description: 'Combines sport bike performance with touring comfort',
-    icon: '🚀',
-    color: 'from-violet-600 to-purple-700',
+    image: 'https://images.unsplash.com/photo-1558980664-1db506751ab4?w=400&h=300&fit=crop',
   },
   {
     type: 'Enduro',
     description: 'Lightweight off-road racing bikes for trail riding',
-    icon: '🏆',
-    color: 'from-yellow-600 to-amber-700',
+    image: 'https://images.unsplash.com/photo-1571715268002-f5a32ab2fc84?w=400&h=300&fit=crop',
   },
   {
     type: 'Dirt Bike',
     description: 'Pure off-road motorcycles, not street legal',
-    icon: '🏜️',
-    color: 'from-stone-600 to-orange-700',
+    image: 'https://images.unsplash.com/photo-1616348002363-57956d4057c8?w=400&h=300&fit=crop',
   },
   {
     type: 'Vintage/Classic',
     description: 'Older collectible motorcycles with timeless appeal',
-    icon: '🕰️',
-    color: 'from-neutral-700 to-stone-800',
+    image: 'https://images.unsplash.com/photo-1558981408-db0ecd8a1ee4?w=400&h=300&fit=crop',
   },
   {
     type: 'Moped',
     description: 'Lower cc bikes, sometimes pedal-assisted for city commuting',
-    icon: '🚲',
-    color: 'from-sky-400 to-blue-500',
+    image: 'https://images.unsplash.com/photo-1593941707874-ef25b8b4a92b?w=400&h=300&fit=crop',
   },
 ];
 
@@ -143,14 +124,18 @@ export default function Categories() {
               className="group"
             >
               <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden h-full">
-                {/* Icon Header with Gradient */}
-                <div
-                  className={`bg-gradient-to-br ${category.color} p-8 text-center`}
-                >
-                  <div className="text-6xl mb-2">{category.icon}</div>
-                  <h2 className="text-2xl font-bold text-white">
-                    {category.type}
-                  </h2>
+                {/* Motorcycle Image */}
+                <div className="relative">
+                  <img
+                    src={category.image}
+                    alt={category.type}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                    <h2 className="text-2xl font-bold text-white">
+                      {category.type}
+                    </h2>
+                  </div>
                 </div>
 
                 {/* Description */}
