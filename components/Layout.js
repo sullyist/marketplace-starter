@@ -15,10 +15,10 @@ export default function Layout({ children }) {
             Starting Grid
           </Link>
           <Link href="/listings" className="hover:text-blue-600">
-            Listings
+            Browse Listings
           </Link>
           <Link href="/categories" className="hover:text-blue-600">
-            Categories
+            Browse Categories
           </Link>
           {session && (
             <>
