@@ -88,7 +88,7 @@ const bikeCategories = [
     image: 'https://placehold.co/400x300/92400e/white?text=Dirt+Bike',
   },
   {
-    type: 'Vintage/Classic',
+    type: 'Classic',
     description: 'Older collectible motorcycles with timeless appeal',
     image: 'https://placehold.co/400x300/57534e/white?text=Classic',
   },

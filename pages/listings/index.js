@@ -22,7 +22,7 @@ const bikeTypes = [
   'Sport Touring',
   'Enduro',
   'Dirt Bike',
-  'Vintage/Classic',
+  'Classic',
   'Moped',
 ];
 
