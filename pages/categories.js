@@ -50,6 +50,72 @@ const bikeCategories = [
     icon: '🛵',
     color: 'from-pink-500 to-rose-500',
   },
+  {
+    type: 'Cafe Racer',
+    description: 'Vintage-inspired minimalist styling with retro cool aesthetics',
+    icon: '☕',
+    color: 'from-amber-600 to-yellow-700',
+  },
+  {
+    type: 'Bobber',
+    description: 'Stripped-down custom cruisers with minimal bodywork',
+    icon: '🔧',
+    color: 'from-slate-700 to-zinc-800',
+  },
+  {
+    type: 'Chopper',
+    description: 'Extended front forks, custom builds, classic American style',
+    icon: '🦅',
+    color: 'from-orange-600 to-red-700',
+  },
+  {
+    type: 'Streetfighter',
+    description: 'Aggressive naked sport bikes with upright riding position',
+    icon: '💪',
+    color: 'from-red-600 to-pink-600',
+  },
+  {
+    type: 'Supermoto',
+    description: 'Dual-sport bikes with street tires, great for urban riding',
+    icon: '🎯',
+    color: 'from-lime-500 to-green-600',
+  },
+  {
+    type: 'Electric',
+    description: 'Zero emissions electric motorcycles for eco-conscious riders',
+    icon: '⚡',
+    color: 'from-emerald-500 to-teal-600',
+  },
+  {
+    type: 'Sport Touring',
+    description: 'Combines sport bike performance with touring comfort',
+    icon: '🚀',
+    color: 'from-violet-600 to-purple-700',
+  },
+  {
+    type: 'Enduro',
+    description: 'Lightweight off-road racing bikes for trail riding',
+    icon: '🏆',
+    color: 'from-yellow-600 to-amber-700',
+  },
+  {
+    type: 'Dirt Bike',
+    description: 'Pure off-road motorcycles, not street legal',
+    icon: '🏜️',
+    color: 'from-stone-600 to-orange-700',
+  },
+  {
+    type: 'Vintage/Classic',
+    description: 'Older collectible motorcycles with timeless appeal',
+    icon: '🕰️',
+    color: 'from-neutral-700 to-stone-800',
+  },
+  {
+    type: 'Moped',
+    description: 'Lower cc bikes, sometimes pedal-assisted for city commuting',
+    icon: '🚲',
+    color: 'from-sky-400 to-blue-500',
+  },
 ];
 
 export default function Categories() {

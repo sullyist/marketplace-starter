@@ -13,6 +13,17 @@ const bikeTypes = [
   'Dual-Sport',
   'Naked',
   'Scooter',
+  'Cafe Racer',
+  'Bobber',
+  'Chopper',
+  'Streetfighter',
+  'Supermoto',
+  'Electric',
+  'Sport Touring',
+  'Enduro',
+  'Dirt Bike',
+  'Vintage/Classic',
+  'Moped',
 ];
 
 const engineSizes = ['125', '250', '500', '600', '750', '1000', '1200'];
