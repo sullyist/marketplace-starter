@@ -95,6 +95,12 @@ export default function ListingDetail({ product }) {
                   <span className="font-medium text-gray-700">Engine Size:</span>
                   <span className="text-gray-900">{product.engineSize}cc</span>
                 </div>
+                {product.power && product.power !== 'Unknown' && (
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="font-medium text-gray-700">Power:</span>
+                    <span className="text-gray-900">{product.power}</span>
+                  </div>
+                )}
                 <div className="flex justify-between border-b pb-2">
                   <span className="font-medium text-gray-700">Location:</span>
                   <span className="text-gray-900">{product.location}</span>

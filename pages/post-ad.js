@@ -30,6 +30,7 @@ export default function PostAd() {
   const [model, setModel] = useState("");
   const [price, setPrice] = useState("");
   const [engineSize, setEngineSize] = useState("");
+  const [power, setPower] = useState("");
   const [bikeType, setBikeType] = useState("");
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
@@ -50,6 +51,7 @@ export default function PostAd() {
         model,
         price,
         engineSize,
+        power,
         bikeType,
         location,
         description,
@@ -156,6 +158,18 @@ export default function PostAd() {
                 min="0"
               />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Power (BHP/kW)</label>
+            <input
+              type="text"
+              placeholder="e.g., 100 BHP or 75 kW"
+              value={power}
+              onChange={(e) => setPower(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="text-xs text-gray-500 mt-1">Optional - enter power in BHP or kW</p>
           </div>
 
           <div>

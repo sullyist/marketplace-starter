@@ -48,6 +48,7 @@ export async function getServerSideProps(context) {
     location = '',
     bikeType = '',
     engineSize = '',
+    power = '',
   } = query;
 
   const filters = {
@@ -55,7 +56,7 @@ export async function getServerSideProps(context) {
       OR: [
         { title: { contains: search, mode: 'insensitive' } },
         { make: { contains: search, mode: 'insensitive' } },
-        { model: { contains: search, mode: 'insensitive' } },
+        { model: { contains: model, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
       ],
     }),
@@ -66,6 +67,7 @@ export async function getServerSideProps(context) {
     ...(maxPrice && { price: { lte: parseFloat(maxPrice) } }),
     ...(bikeType && { bikeType }),
     ...(engineSize && { engineSize: { contains: engineSize } }),
+    ...(power && { power: { contains: power, mode: 'insensitive' } }),
   };
 
   const products = await prisma.product.findMany({
@@ -76,7 +78,7 @@ export async function getServerSideProps(context) {
   return {
     props: {
       products: JSON.parse(JSON.stringify(products)),
-      initialQuery: { search, make, model, minPrice, maxPrice, location, bikeType, engineSize },
+      initialQuery: { search, make, model, minPrice, maxPrice, location, bikeType, engineSize, power },
     },
   };
 }
@@ -90,6 +92,7 @@ export default function Listings({ products, initialQuery }) {
   const [maxPrice, setMaxPrice] = useState(initialQuery.maxPrice || '');
   const [bikeType, setBikeType] = useState(initialQuery.bikeType || '');
   const [engineSize, setEngineSize] = useState(initialQuery.engineSize || '');
+  const [power, setPower] = useState(initialQuery.power || '');
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -102,6 +105,7 @@ export default function Listings({ products, initialQuery }) {
     if (maxPrice) params.append('maxPrice', maxPrice);
     if (bikeType) params.append('bikeType', bikeType);
     if (engineSize) params.append('engineSize', engineSize);
+    if (power) params.append('power', power);
 
     window.location.href = `/listings?${params.toString()}`;
   };
@@ -190,7 +194,7 @@ export default function Listings({ products, initialQuery }) {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               <input
                 type="number"
                 placeholder="Min Price (€)"
@@ -210,6 +214,13 @@ export default function Listings({ products, initialQuery }) {
                 placeholder="Engine Size (e.g., 600)"
                 value={engineSize}
                 onChange={(e) => setEngineSize(e.target.value)}
+                className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="text"
+                placeholder="Power (BHP/kW)"
+                value={power}
+                onChange={(e) => setPower(e.target.value)}
                 className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <select
@@ -270,6 +281,11 @@ export default function Listings({ products, initialQuery }) {
                     <p className="text-gray-600 mb-1">
                       <span className="font-medium">Engine:</span> {product.engineSize}cc
                     </p>
+                    {product.power && product.power !== 'Unknown' && (
+                      <p className="text-gray-600 mb-1">
+                        <span className="font-medium">Power:</span> {product.power}
+                      </p>
+                    )}
                     <p className="text-gray-600 mb-3">
                       <span className="font-medium">Location:</span> {product.location}
                     </p>

@@ -29,6 +29,7 @@ model Product {
   makeModel   String   @default("Unknown")
   description String
   engineSize String @default("Unknown")
+  power      String @default("Unknown")
   bikeType   String @default("Unknown")
   price       Float
   imageUrl    String
