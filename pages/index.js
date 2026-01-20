@@ -164,7 +164,7 @@ export default function Home({ recentListings }) {
       <section className="py-16 bg-blue-600 text-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Ready to Find Your Next Ride?
+            Ready to Find Your Next Bike?
           </h2>
           <p className="text-xl mb-8">
             Join thousands of riders buying and selling motorcycles on our platform
