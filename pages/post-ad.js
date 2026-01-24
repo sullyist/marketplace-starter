@@ -40,7 +40,51 @@ export default function PostAd() {
   const [imageUrl, setImageUrl] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setMessage("Image size must be less than 5MB");
+      return;
+    }
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      setMessage("Please upload an image file");
+      return;
+    }
+
+    setUploading(true);
+    setMessage("");
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to upload image');
+      }
+
+      setImageUrl(data.url);
+      setMessage("Image uploaded successfully!");
+    } catch (err) {
+      setMessage(err.message || "Failed to upload image");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const onSubmit = async (ev) => {
     ev.preventDefault();
@@ -262,10 +306,56 @@ export default function PostAd() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Image URL (optional)</label>
+            <label className="block text-sm font-medium mb-1">Image</label>
+
+            {/* Image preview */}
+            {imageUrl && (
+              <div className="mb-4">
+                <img
+                  src={imageUrl}
+                  alt="Preview"
+                  className="w-full h-48 object-cover rounded-lg border border-gray-300"
+                />
+                <button
+                  type="button"
+                  onClick={() => setImageUrl("")}
+                  className="mt-2 text-sm text-red-600 hover:text-red-800"
+                >
+                  Remove image
+                </button>
+              </div>
+            )}
+
+            {/* File upload */}
+            <div className="mb-3">
+              <label className="block">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 cursor-pointer transition">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    disabled={uploading}
+                  />
+                  <div className="text-gray-600">
+                    {uploading ? (
+                      <span>Uploading...</span>
+                    ) : (
+                      <>
+                        <span className="text-blue-600 font-medium">Click to upload</span> or drag and drop
+                        <p className="text-xs mt-1">PNG, JPG, GIF up to 5MB</p>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            {/* Or enter URL */}
+            <div className="text-center text-gray-500 text-sm mb-2">OR</div>
             <input
               type="url"
-              placeholder="https://example.com/image.jpg"
+              placeholder="Enter image URL"
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
               className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
