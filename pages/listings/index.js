@@ -53,6 +53,7 @@ export async function getServerSideProps(context) {
     bikeType = '',
     engineSize = '',
     power = '',
+    sortBy = 'newest',
   } = query;
 
   const filters = {
@@ -78,15 +79,41 @@ export async function getServerSideProps(context) {
     ...(power && { power: { contains: power, mode: 'insensitive' } }),
   };
 
+  // Determine sort order
+  let orderBy;
+  switch (sortBy) {
+    case 'price-low':
+      orderBy = { price: 'asc' };
+      break;
+    case 'price-high':
+      orderBy = { price: 'desc' };
+      break;
+    case 'year-new':
+      orderBy = { year: 'desc' };
+      break;
+    case 'year-old':
+      orderBy = { year: 'asc' };
+      break;
+    case 'mileage-low':
+      orderBy = { mileage: 'asc' };
+      break;
+    case 'mileage-high':
+      orderBy = { mileage: 'desc' };
+      break;
+    case 'newest':
+    default:
+      orderBy = { createdAt: 'desc' };
+  }
+
   const products = await prisma.product.findMany({
     where: filters,
-    orderBy: { createdAt: 'desc' },
+    orderBy,
   });
 
   return {
     props: {
       products: JSON.parse(JSON.stringify(products)),
-      initialQuery: { search, make, model, minYear, maxYear, maxMileage, condition, minPrice, maxPrice, location, bikeType, engineSize, power },
+      initialQuery: { search, make, model, minYear, maxYear, maxMileage, condition, minPrice, maxPrice, location, bikeType, engineSize, power, sortBy },
     },
   };
 }
@@ -105,6 +132,7 @@ export default function Listings({ products, initialQuery }) {
   const [bikeType, setBikeType] = useState(initialQuery.bikeType || '');
   const [engineSize, setEngineSize] = useState(initialQuery.engineSize || '');
   const [power, setPower] = useState(initialQuery.power || '');
+  const [sortBy, setSortBy] = useState(initialQuery.sortBy || 'newest');
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -122,21 +150,69 @@ export default function Listings({ products, initialQuery }) {
     if (bikeType) params.append('bikeType', bikeType);
     if (engineSize) params.append('engineSize', engineSize);
     if (power) params.append('power', power);
+    if (sortBy) params.append('sortBy', sortBy);
 
     window.location.href = `/listings?${params.toString()}`;
+  };
+
+  const clearFilters = () => {
+    setSearch('');
+    setMake('');
+    setModel('');
+    setMinYear('');
+    setMaxYear('');
+    setMaxMileage('');
+    setCondition('');
+    setLocation('');
+    setMinPrice('');
+    setMaxPrice('');
+    setBikeType('');
+    setEngineSize('');
+    setPower('');
+    setSortBy('newest');
+    window.location.href = '/listings';
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Browse Motorcycles
-          </h1>
-          <p className="text-xl text-blue-100">
-            {products.length} {products.length === 1 ? 'motorcycle' : 'motorcycles'} available
-          </p>
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-6">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Browse Motorcycles
+            </h1>
+            <p className="text-xl text-blue-100">
+              {products.length} {products.length === 1 ? 'motorcycle' : 'motorcycles'} available
+            </p>
+          </div>
+          {/* Sort and Actions */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <select
+              value={sortBy}
+              onChange={(e) => {
+                setSortBy(e.target.value);
+                const params = new URLSearchParams(window.location.search);
+                params.set('sortBy', e.target.value);
+                window.location.href = `/listings?${params.toString()}`;
+              }}
+              className="px-4 py-2 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            >
+              <option value="newest">Newest First</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="year-new">Year: Newest First</option>
+              <option value="year-old">Year: Oldest First</option>
+              <option value="mileage-low">Mileage: Low to High</option>
+              <option value="mileage-high">Mileage: High to Low</option>
+            </select>
+            <button
+              onClick={clearFilters}
+              className="px-6 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition"
+            >
+              Clear All Filters
+            </button>
+          </div>
         </div>
       </section>
 
