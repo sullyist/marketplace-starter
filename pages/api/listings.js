@@ -24,6 +24,9 @@ export default async function handler(req, res) {
       title,
       make,
       model,
+      year,
+      mileage,
+      condition,
       price,
       engineSize,
       power,
@@ -34,7 +37,7 @@ export default async function handler(req, res) {
     } = req.body;
 
     // Basic validation
-    if (!title || !make || !model || !price || !engineSize || !bikeType || !location) {
+    if (!title || !make || !model || !year || !mileage || !condition || !price || !engineSize || !bikeType || !location) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -45,6 +48,9 @@ export default async function handler(req, res) {
           make: make.trim(),
           model: model.trim(),
           makeModel: `${make.trim()} ${model.trim()}`,
+          year: year.toString(),
+          mileage: mileage.toString(),
+          condition: condition.trim(),
           description: description || '',
           price: parseFloat(price),
           engineSize: engineSize.toString(),

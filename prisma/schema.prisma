@@ -27,6 +27,9 @@ model Product {
   make        String   @default("Unknown")
   model       String   @default("Unknown")
   makeModel   String   @default("Unknown")
+  year        String   @default("Unknown")
+  mileage     String   @default("Unknown")
+  condition   String   @default("Unknown")
   description String
   engineSize String @default("Unknown")
   power      String @default("Unknown")

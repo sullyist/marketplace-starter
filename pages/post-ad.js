@@ -28,6 +28,9 @@ export default function PostAd() {
   const [title, setTitle] = useState("");
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
+  const [year, setYear] = useState("");
+  const [mileage, setMileage] = useState("");
+  const [condition, setCondition] = useState("");
   const [price, setPrice] = useState("");
   const [engineSize, setEngineSize] = useState("");
   const [power, setPower] = useState("");
@@ -49,6 +52,9 @@ export default function PostAd() {
         title,
         make,
         model,
+        year,
+        mileage,
+        condition,
         price,
         engineSize,
         power,
@@ -129,6 +135,50 @@ export default function PostAd() {
                 className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Year *</label>
+              <input
+                type="number"
+                placeholder="e.g., 2020"
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+                min="1900"
+                max="2030"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Mileage (km) *</label>
+              <input
+                type="number"
+                placeholder="e.g., 15000"
+                value={mileage}
+                onChange={(e) => setMileage(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+                min="0"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Condition *</label>
+              <select
+                value={condition}
+                onChange={(e) => setCondition(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              >
+                <option value="">Select condition</option>
+                <option value="New">New</option>
+                <option value="Excellent">Excellent</option>
+                <option value="Good">Good</option>
+                <option value="Fair">Fair</option>
+                <option value="Poor">Poor</option>
+              </select>
             </div>
           </div>
 

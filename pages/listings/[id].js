@@ -87,6 +87,24 @@ export default function ListingDetail({ product }) {
                   <span className="font-medium text-gray-700">Model:</span>
                   <span className="text-gray-900">{product.model}</span>
                 </div>
+                {product.year && product.year !== 'Unknown' && (
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="font-medium text-gray-700">Year:</span>
+                    <span className="text-gray-900">{product.year}</span>
+                  </div>
+                )}
+                {product.mileage && product.mileage !== 'Unknown' && (
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="font-medium text-gray-700">Mileage:</span>
+                    <span className="text-gray-900">{parseInt(product.mileage).toLocaleString()} km</span>
+                  </div>
+                )}
+                {product.condition && product.condition !== 'Unknown' && (
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="font-medium text-gray-700">Condition:</span>
+                    <span className="text-gray-900">{product.condition}</span>
+                  </div>
+                )}
                 <div className="flex justify-between border-b pb-2">
                   <span className="font-medium text-gray-700">Type:</span>
                   <span className="text-gray-900">{product.bikeType}</span>

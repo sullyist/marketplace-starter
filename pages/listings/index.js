@@ -43,6 +43,10 @@ export async function getServerSideProps(context) {
     search = '',
     make = '',
     model = '',
+    minYear = '',
+    maxYear = '',
+    maxMileage = '',
+    condition = '',
     minPrice = '',
     maxPrice = '',
     location = '',
@@ -62,6 +66,10 @@ export async function getServerSideProps(context) {
     }),
     ...(make && { make: { contains: make, mode: 'insensitive' } }),
     ...(model && { model: { contains: model, mode: 'insensitive' } }),
+    ...(minYear && { year: { gte: minYear } }),
+    ...(maxYear && { year: { lte: maxYear } }),
+    ...(maxMileage && { mileage: { lte: maxMileage } }),
+    ...(condition && { condition }),
     ...(location && { location: { contains: location, mode: 'insensitive' } }),
     ...(minPrice && { price: { gte: parseFloat(minPrice) } }),
     ...(maxPrice && { price: { lte: parseFloat(maxPrice) } }),
@@ -78,7 +86,7 @@ export async function getServerSideProps(context) {
   return {
     props: {
       products: JSON.parse(JSON.stringify(products)),
-      initialQuery: { search, make, model, minPrice, maxPrice, location, bikeType, engineSize, power },
+      initialQuery: { search, make, model, minYear, maxYear, maxMileage, condition, minPrice, maxPrice, location, bikeType, engineSize, power },
     },
   };
 }
@@ -87,6 +95,10 @@ export default function Listings({ products, initialQuery }) {
   const [search, setSearch] = useState(initialQuery.search || '');
   const [make, setMake] = useState(initialQuery.make || '');
   const [model, setModel] = useState(initialQuery.model || '');
+  const [minYear, setMinYear] = useState(initialQuery.minYear || '');
+  const [maxYear, setMaxYear] = useState(initialQuery.maxYear || '');
+  const [maxMileage, setMaxMileage] = useState(initialQuery.maxMileage || '');
+  const [condition, setCondition] = useState(initialQuery.condition || '');
   const [location, setLocation] = useState(initialQuery.location || '');
   const [minPrice, setMinPrice] = useState(initialQuery.minPrice || '');
   const [maxPrice, setMaxPrice] = useState(initialQuery.maxPrice || '');
@@ -100,6 +112,10 @@ export default function Listings({ products, initialQuery }) {
     if (search) params.append('search', search);
     if (make) params.append('make', make);
     if (model) params.append('model', model);
+    if (minYear) params.append('minYear', minYear);
+    if (maxYear) params.append('maxYear', maxYear);
+    if (maxMileage) params.append('maxMileage', maxMileage);
+    if (condition) params.append('condition', condition);
     if (location) params.append('location', location);
     if (minPrice) params.append('minPrice', minPrice);
     if (maxPrice) params.append('maxPrice', maxPrice);
@@ -194,6 +210,42 @@ export default function Listings({ products, initialQuery }) {
               />
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <input
+                type="number"
+                placeholder="Min Year"
+                value={minYear}
+                onChange={(e) => setMinYear(e.target.value)}
+                className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="number"
+                placeholder="Max Year"
+                value={maxYear}
+                onChange={(e) => setMaxYear(e.target.value)}
+                className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="number"
+                placeholder="Max Mileage (km)"
+                value={maxMileage}
+                onChange={(e) => setMaxMileage(e.target.value)}
+                className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <select
+                value={condition}
+                onChange={(e) => setCondition(e.target.value)}
+                className="border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Conditions</option>
+                <option value="New">New</option>
+                <option value="Excellent">Excellent</option>
+                <option value="Good">Good</option>
+                <option value="Fair">Fair</option>
+                <option value="Poor">Poor</option>
+              </select>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               <input
                 type="number"
@@ -275,6 +327,21 @@ export default function Listings({ products, initialQuery }) {
                     <p className="text-gray-600 mb-1">
                       <span className="font-medium">Model:</span> {product.model}
                     </p>
+                    {product.year && product.year !== 'Unknown' && (
+                      <p className="text-gray-600 mb-1">
+                        <span className="font-medium">Year:</span> {product.year}
+                      </p>
+                    )}
+                    {product.mileage && product.mileage !== 'Unknown' && (
+                      <p className="text-gray-600 mb-1">
+                        <span className="font-medium">Mileage:</span> {parseInt(product.mileage).toLocaleString()} km
+                      </p>
+                    )}
+                    {product.condition && product.condition !== 'Unknown' && (
+                      <p className="text-gray-600 mb-1">
+                        <span className="font-medium">Condition:</span> {product.condition}
+                      </p>
+                    )}
                     <p className="text-gray-600 mb-1">
                       <span className="font-medium">Type:</span> {product.bikeType}
                     </p>
