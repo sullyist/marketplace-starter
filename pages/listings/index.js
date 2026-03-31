@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import Link from 'next/link';
 import { useState } from 'react';
 import ChatBot from '../../components/ChatBot';
-import { Zap, Sunset, Mountain, Map, Flame, Wind, Coffee, Battery } from 'lucide-react';
+import { Zap, Sunset, Mountain, Map, Flame, Wind, Coffee, Battery, Gauge, Compass, Wrench, Anchor, Shield, Navigation, Globe, TreePine, Pickaxe, Clock, Bike } from 'lucide-react';
 
 const prisma = new PrismaClient();
 
@@ -29,14 +29,25 @@ const bikeTypes = [
 ];
 
 const categoryCards = [
-  { type: 'Sport',      Icon: Zap,     color: 'from-red-500 to-orange-500' },
-  { type: 'Cruiser',    Icon: Sunset,  color: 'from-purple-500 to-pink-500' },
-  { type: 'Adventure',  Icon: Mountain,color: 'from-green-500 to-teal-500' },
-  { type: 'Touring',    Icon: Map,     color: 'from-blue-500 to-indigo-500' },
-  { type: 'Naked',      Icon: Flame,   color: 'from-cyan-500 to-blue-600' },
-  { type: 'Scooter',    Icon: Wind,    color: 'from-pink-500 to-rose-500' },
-  { type: 'Cafe Racer', Icon: Coffee,  color: 'from-amber-600 to-yellow-700' },
-  { type: 'Electric',   Icon: Battery, color: 'from-emerald-500 to-teal-600' },
+  { type: 'Sport',         Icon: Zap,        color: 'from-red-500 to-orange-500' },
+  { type: 'Cruiser',       Icon: Sunset,     color: 'from-purple-500 to-pink-500' },
+  { type: 'Adventure',     Icon: Mountain,   color: 'from-green-500 to-teal-500' },
+  { type: 'Touring',       Icon: Map,        color: 'from-blue-500 to-indigo-500' },
+  { type: 'Standard',      Icon: Gauge,      color: 'from-gray-500 to-gray-700' },
+  { type: 'Dual-Sport',    Icon: Compass,    color: 'from-orange-500 to-amber-600' },
+  { type: 'Naked',         Icon: Flame,      color: 'from-cyan-500 to-blue-600' },
+  { type: 'Scooter',       Icon: Wind,       color: 'from-pink-500 to-rose-500' },
+  { type: 'Cafe Racer',    Icon: Coffee,     color: 'from-amber-600 to-yellow-700' },
+  { type: 'Bobber',        Icon: Wrench,     color: 'from-slate-500 to-slate-700' },
+  { type: 'Chopper',       Icon: Anchor,     color: 'from-red-700 to-red-900' },
+  { type: 'Streetfighter', Icon: Shield,     color: 'from-rose-600 to-pink-700' },
+  { type: 'Supermoto',     Icon: Navigation, color: 'from-lime-500 to-green-600' },
+  { type: 'Electric',      Icon: Battery,    color: 'from-emerald-500 to-teal-600' },
+  { type: 'Sport Touring', Icon: Globe,      color: 'from-violet-500 to-purple-600' },
+  { type: 'Enduro',        Icon: TreePine,   color: 'from-yellow-500 to-amber-600' },
+  { type: 'Dirt Bike',     Icon: Pickaxe,    color: 'from-amber-700 to-orange-800' },
+  { type: 'Classic',       Icon: Clock,      color: 'from-stone-500 to-stone-700' },
+  { type: 'Moped',         Icon: Bike,       color: 'from-sky-400 to-blue-500' },
 ];
 
 const PAGE_SIZE = 12;
