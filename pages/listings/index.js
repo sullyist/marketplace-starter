@@ -134,6 +134,7 @@ export async function getServerSideProps(context) {
 }
 
 export default function Listings({ products, totalCount, totalPages, currentPage, initialQuery }) {
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [search, setSearch] = useState(initialQuery.search || '');
   const [make, setMake] = useState(initialQuery.make || '');
   const [model, setModel] = useState(initialQuery.model || '');
@@ -220,6 +221,11 @@ export default function Listings({ products, totalCount, totalPages, currentPage
             <p className="text-xl text-blue-100">
               {totalCount} {totalCount === 1 ? 'motorcycle' : 'motorcycles'} available
             </p>
+            {totalCount > 0 && (
+              <p className="text-sm text-blue-200 mt-1">
+                Showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, totalCount)} of {totalCount}
+              </p>
+            )}
           </div>
           {/* Sort and Actions */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -287,9 +293,19 @@ export default function Listings({ products, totalCount, totalPages, currentPage
       </section>
 
       {/* Filters Section */}
-      <section className="bg-white shadow-md py-8">
+      <section className="bg-white shadow-md py-4 md:py-8">
         <div className="max-w-6xl mx-auto px-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Mobile toggle */}
+          <button
+            type="button"
+            className="md:hidden w-full flex items-center justify-between py-2 font-semibold text-gray-700"
+            onClick={() => setFiltersOpen(!filtersOpen)}
+          >
+            <span>Filters & Search</span>
+            <span>{filtersOpen ? '▲' : '▼'}</span>
+          </button>
+
+          <form onSubmit={handleSubmit} className={`space-y-4 ${filtersOpen ? 'block' : 'hidden'} md:block`}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <input
                 type="text"
@@ -426,6 +442,7 @@ export default function Listings({ products, totalCount, totalPages, currentPage
                       src={product.imageUrl}
                       alt={product.title}
                       className="w-full h-48 object-cover"
+                      loading="lazy"
                     />
                   )}
                   <div className="p-6">

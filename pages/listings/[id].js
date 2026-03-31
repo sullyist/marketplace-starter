@@ -32,12 +32,14 @@ export default function ListingDetail({ product }) {
       {/* Header Section */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-12">
         <div className="max-w-6xl mx-auto px-6">
-          <button
-            onClick={() => router.back()}
-            className="mb-4 text-white hover:text-blue-200 transition flex items-center"
-          >
-            ← Back to Listings
-          </button>
+          {/* Breadcrumb */}
+          <nav className="mb-4 text-sm text-blue-200 flex items-center gap-2">
+            <Link href="/" className="hover:text-white transition">Home</Link>
+            <span>/</span>
+            <Link href="/listings" className="hover:text-white transition">Listings</Link>
+            <span>/</span>
+            <span className="text-white truncate max-w-xs">{product.title}</span>
+          </nav>
           <h1 className="text-4xl md:text-5xl font-bold">
             {product.title}
           </h1>
@@ -57,6 +59,7 @@ export default function ListingDetail({ product }) {
                 src={product.imageUrl}
                 alt={product.title}
                 className="w-full h-96 object-cover"
+                loading="lazy"
               />
             ) : (
               <div className="w-full h-96 bg-gray-200 flex items-center justify-center">
