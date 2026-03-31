@@ -37,6 +37,8 @@ const categoryCards = [
   { type: 'Electric', icon: '⚡', color: 'from-emerald-500 to-teal-600' },
 ];
 
+const PAGE_SIZE = 12;
+
 export async function getServerSideProps(context) {
   const { query } = context;
   const {
@@ -54,7 +56,10 @@ export async function getServerSideProps(context) {
     engineSize = '',
     power = '',
     sortBy = 'newest',
+    page = '1',
   } = query;
+
+  const currentPage = Math.max(1, parseInt(page) || 1);
 
   const filters = {
     ...(search && {
@@ -105,20 +110,30 @@ export async function getServerSideProps(context) {
       orderBy = { createdAt: 'desc' };
   }
 
-  const products = await prisma.product.findMany({
-    where: filters,
-    orderBy,
-  });
+  const [products, totalCount] = await Promise.all([
+    prisma.product.findMany({
+      where: filters,
+      orderBy,
+      skip: (currentPage - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+    }),
+    prisma.product.count({ where: filters }),
+  ]);
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   return {
     props: {
       products: JSON.parse(JSON.stringify(products)),
+      totalCount,
+      totalPages,
+      currentPage,
       initialQuery: { search, make, model, minYear, maxYear, maxMileage, condition, minPrice, maxPrice, location, bikeType, engineSize, power, sortBy },
     },
   };
 }
 
-export default function Listings({ products, initialQuery }) {
+export default function Listings({ products, totalCount, totalPages, currentPage, initialQuery }) {
   const [search, setSearch] = useState(initialQuery.search || '');
   const [make, setMake] = useState(initialQuery.make || '');
   const [model, setModel] = useState(initialQuery.model || '');
@@ -155,6 +170,26 @@ export default function Listings({ products, initialQuery }) {
     window.location.href = `/listings?${params.toString()}`;
   };
 
+  const buildPageUrl = (p) => {
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (make) params.append('make', make);
+    if (model) params.append('model', model);
+    if (minYear) params.append('minYear', minYear);
+    if (maxYear) params.append('maxYear', maxYear);
+    if (maxMileage) params.append('maxMileage', maxMileage);
+    if (condition) params.append('condition', condition);
+    if (location) params.append('location', location);
+    if (minPrice) params.append('minPrice', minPrice);
+    if (maxPrice) params.append('maxPrice', maxPrice);
+    if (bikeType) params.append('bikeType', bikeType);
+    if (engineSize) params.append('engineSize', engineSize);
+    if (power) params.append('power', power);
+    if (sortBy) params.append('sortBy', sortBy);
+    params.set('page', p);
+    return `/listings?${params.toString()}`;
+  };
+
   const clearFilters = () => {
     setSearch('');
     setMake('');
@@ -183,7 +218,7 @@ export default function Listings({ products, initialQuery }) {
               Browse Motorcycles
             </h1>
             <p className="text-xl text-blue-100">
-              {products.length} {products.length === 1 ? 'motorcycle' : 'motorcycles'} available
+              {totalCount} {totalCount === 1 ? 'motorcycle' : 'motorcycles'} available
             </p>
           </div>
           {/* Sort and Actions */}
@@ -458,6 +493,46 @@ export default function Listings({ products, initialQuery }) {
             >
               Clear Filters
             </Link>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-10">
+            <a
+              href={buildPageUrl(currentPage - 1)}
+              className={`px-4 py-2 rounded-lg border font-medium transition ${currentPage === 1 ? 'pointer-events-none opacity-40 bg-white' : 'bg-white hover:bg-gray-50'}`}
+            >
+              ← Prev
+            </a>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 2)
+              .reduce((acc, p, idx, arr) => {
+                if (idx > 0 && p - arr[idx - 1] > 1) acc.push('...');
+                acc.push(p);
+                return acc;
+              }, [])
+              .map((p, idx) =>
+                p === '...' ? (
+                  <span key={`ellipsis-${idx}`} className="px-2 text-gray-400">…</span>
+                ) : (
+                  <a
+                    key={p}
+                    href={buildPageUrl(p)}
+                    className={`px-4 py-2 rounded-lg border font-medium transition ${p === currentPage ? 'bg-blue-600 text-white border-blue-600' : 'bg-white hover:bg-gray-50'}`}
+                  >
+                    {p}
+                  </a>
+                )
+              )}
+
+            <a
+              href={buildPageUrl(currentPage + 1)}
+              className={`px-4 py-2 rounded-lg border font-medium transition ${currentPage === totalPages ? 'pointer-events-none opacity-40 bg-white' : 'bg-white hover:bg-gray-50'}`}
+            >
+              Next →
+            </a>
           </div>
         )}
       </section>

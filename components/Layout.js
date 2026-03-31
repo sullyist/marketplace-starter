@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
-import ChatBot from './ChatBot';
 
 export default function Layout({ children }) {
   const { data: session } = useSession();
@@ -63,7 +62,6 @@ export default function Layout({ children }) {
 
       <main className="p-6 max-w-4xl mx-auto">
         {children}
-        <ChatBot />
       </main>
     </div>
   );
