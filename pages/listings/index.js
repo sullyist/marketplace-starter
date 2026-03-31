@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import Link from 'next/link';
 import { useState } from 'react';
 import ChatBot from '../../components/ChatBot';
+import { Zap, Sunset, Mountain, Map, Flame, Wind, Coffee, Battery } from 'lucide-react';
 
 const prisma = new PrismaClient();
 
@@ -28,14 +29,14 @@ const bikeTypes = [
 ];
 
 const categoryCards = [
-  { type: 'Sport', icon: '🏍️', color: 'from-red-500 to-orange-500' },
-  { type: 'Cruiser', icon: '🏍️', color: 'from-purple-500 to-pink-500' },
-  { type: 'Adventure', icon: '🏍️', color: 'from-green-500 to-teal-500' },
-  { type: 'Touring', icon: '🏍️', color: 'from-blue-500 to-indigo-500' },
-  { type: 'Naked', icon: '🏍️', color: 'from-cyan-500 to-blue-600' },
-  { type: 'Scooter', icon: '🛵', color: 'from-pink-500 to-rose-500' },
-  { type: 'Cafe Racer', icon: '🏍️', color: 'from-amber-600 to-yellow-700' },
-  { type: 'Electric', icon: '🏍️', color: 'from-emerald-500 to-teal-600' },
+  { type: 'Sport',      Icon: Zap,     color: 'from-red-500 to-orange-500' },
+  { type: 'Cruiser',    Icon: Sunset,  color: 'from-purple-500 to-pink-500' },
+  { type: 'Adventure',  Icon: Mountain,color: 'from-green-500 to-teal-500' },
+  { type: 'Touring',    Icon: Map,     color: 'from-blue-500 to-indigo-500' },
+  { type: 'Naked',      Icon: Flame,   color: 'from-cyan-500 to-blue-600' },
+  { type: 'Scooter',    Icon: Wind,    color: 'from-pink-500 to-rose-500' },
+  { type: 'Cafe Racer', Icon: Coffee,  color: 'from-amber-600 to-yellow-700' },
+  { type: 'Electric',   Icon: Battery, color: 'from-emerald-500 to-teal-600' },
 ];
 
 const PAGE_SIZE = 12;
@@ -271,7 +272,7 @@ export default function Listings({ products, totalCount, totalPages, currentPage
               >
                 <div className="bg-white border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-all duration-200 overflow-hidden">
                   <div className={`bg-gradient-to-br ${category.color} p-4 text-center`}>
-                    <div className="text-3xl mb-1">{category.icon}</div>
+                    <category.Icon size={28} className="text-white" />
                   </div>
                   <div className="p-2 text-center min-h-[2.5rem] flex items-center justify-center">
                     <span className="text-xs font-medium text-gray-700 group-hover:text-blue-600 transition break-words leading-tight">
