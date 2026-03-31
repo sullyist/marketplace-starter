@@ -7,6 +7,7 @@ export default function Dashboard() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleteLoading, setDeleteLoading] = useState(null);
+  const [deleteError, setDeleteError] = useState('');
 
   const fetchProducts = () => {
     if (session?.user?.id) {
@@ -26,28 +27,18 @@ export default function Dashboard() {
   }, [session]);
 
   const handleDelete = async (productId, productTitle) => {
-    if (!confirm(`Are you sure you want to delete "${productTitle}"? This action cannot be undone.`)) {
-      return;
-    }
+    if (!window.confirm(`Are you sure you want to delete "${productTitle}"?`)) return;
 
     setDeleteLoading(productId);
+    setDeleteError('');
 
     try {
-      const res = await fetch(`/api/products/${productId}`, {
-        method: 'DELETE',
-      });
-
+      const res = await fetch(`/api/products/${productId}`, { method: 'DELETE' });
       const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to delete listing');
-      }
-
-      // Remove from local state
+      if (!res.ok) throw new Error(data.error || 'Failed to delete listing');
       setProducts(products.filter(p => p.id !== productId));
-      alert('Listing deleted successfully!');
     } catch (err) {
-      alert(err.message || 'Failed to delete listing');
+      setDeleteError(err.message || 'Failed to delete listing');
     } finally {
       setDeleteLoading(null);
     }
@@ -82,6 +73,12 @@ export default function Dashboard() {
             + Post New Ad
           </Link>
         </div>
+
+        {deleteError && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+            {deleteError}
+          </div>
+        )}
 
         {loading ? (
           <div className="text-center py-12">

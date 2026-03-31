@@ -1,6 +1,6 @@
-// pages/reset-password.js
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 export default function ResetPassword() {
   const router = useRouter();
@@ -24,9 +24,7 @@ export default function ResetPassword() {
     setSuccess('');
 
     if (!isStrongPassword(password)) {
-      return setError(
-        'Password must be at least 8 characters and include upper/lower case, number, and special character.'
-      );
+      return setError('Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character (!@#$%^&*).');
     }
 
     if (password !== confirmPassword) {
@@ -42,7 +40,7 @@ export default function ResetPassword() {
     const data = await res.json();
 
     if (res.ok) {
-      setSuccess('Password successfully reset. You can now login.');
+      setSuccess('Password reset successfully. Redirecting to login...');
       setTimeout(() => router.push('/login'), 2000);
     } else {
       setError(data.error || 'Something went wrong.');
@@ -50,38 +48,59 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow">
-      <h1 className="text-xl font-bold mb-4">Reset Your Password</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium">New Password</label>
-          <input
-            type="password"
-            className="w-full border px-3 py-2 rounded"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <Link href="/" className="text-2xl font-bold text-blue-600">MotoMarket</Link>
+          <h1 className="text-3xl font-bold mt-4 mb-2">Set new password</h1>
+          <p className="text-gray-500">Choose a strong password for your account</p>
         </div>
-        <div>
-          <label className="block text-sm font-medium">Confirm Password</label>
-          <input
-            type="password"
-            className="w-full border px-3 py-2 rounded"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
+
+        <div className="bg-white rounded-2xl shadow-md p-8">
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
+              {success}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+              <input
+                type="password"
+                className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+              />
+              <p className="text-xs text-gray-500 mt-1">Min 8 chars, upper & lowercase, number, special character</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+              <input
+                type="password"
+                className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-semibold transition"
+            >
+              Reset Password
+            </button>
+          </form>
         </div>
-        {error && <p className="text-red-600 text-sm">{error}</p>}
-        {success && <p className="text-green-600 text-sm">{success}</p>}
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Reset Password
-        </button>
-      </form>
+      </div>
     </div>
   );
 }
