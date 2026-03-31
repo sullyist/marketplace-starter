@@ -28,14 +28,14 @@ const bikeTypes = [
 ];
 
 const categoryCards = [
-  { type: 'Sport', icon: '🏁', color: 'from-red-500 to-orange-500' },
-  { type: 'Cruiser', icon: '🛣️', color: 'from-purple-500 to-pink-500' },
-  { type: 'Adventure', icon: '🏔️', color: 'from-green-500 to-teal-500' },
-  { type: 'Touring', icon: '🗺️', color: 'from-blue-500 to-indigo-500' },
-  { type: 'Naked', icon: '⚡', color: 'from-cyan-500 to-blue-600' },
+  { type: 'Sport', icon: '🏍️', color: 'from-red-500 to-orange-500' },
+  { type: 'Cruiser', icon: '🏍️', color: 'from-purple-500 to-pink-500' },
+  { type: 'Adventure', icon: '🏍️', color: 'from-green-500 to-teal-500' },
+  { type: 'Touring', icon: '🏍️', color: 'from-blue-500 to-indigo-500' },
+  { type: 'Naked', icon: '🏍️', color: 'from-cyan-500 to-blue-600' },
   { type: 'Scooter', icon: '🛵', color: 'from-pink-500 to-rose-500' },
-  { type: 'Cafe Racer', icon: '☕', color: 'from-amber-600 to-yellow-700' },
-  { type: 'Electric', icon: '⚡', color: 'from-emerald-500 to-teal-600' },
+  { type: 'Cafe Racer', icon: '🏍️', color: 'from-amber-600 to-yellow-700' },
+  { type: 'Electric', icon: '🏍️', color: 'from-emerald-500 to-teal-600' },
 ];
 
 const PAGE_SIZE = 12;
