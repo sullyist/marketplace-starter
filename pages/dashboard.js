@@ -9,6 +9,47 @@ export default function Dashboard() {
   const [deleteLoading, setDeleteLoading] = useState(null);
   const [deleteError, setDeleteError] = useState('');
 
+  const [pwOpen, setPwOpen] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [pwLoading, setPwLoading] = useState(false);
+  const [pwMessage, setPwMessage] = useState('');
+  const [pwError, setPwError] = useState('');
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPwError('');
+    setPwMessage('');
+
+    if (newPassword !== confirmPassword) {
+      return setPwError('New passwords do not match.');
+    }
+    if (newPassword.length < 8) {
+      return setPwError('New password must be at least 8 characters.');
+    }
+
+    setPwLoading(true);
+    try {
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setPwMessage('Password changed successfully.');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setPwOpen(false);
+    } catch (err) {
+      setPwError(err.message || 'Failed to change password.');
+    } finally {
+      setPwLoading(false);
+    }
+  };
+
   const fetchProducts = () => {
     if (session?.user?.id) {
       setLoading(true);
@@ -72,6 +113,67 @@ export default function Dashboard() {
           >
             + Post New Ad
           </Link>
+        </div>
+
+        {/* Change Password */}
+        <div className="mb-8 bg-white rounded-lg shadow-sm border border-gray-100">
+          <button
+            onClick={() => { setPwOpen(!pwOpen); setPwError(''); setPwMessage(''); }}
+            className="w-full flex items-center justify-between px-6 py-4 text-left font-semibold text-gray-700 hover:bg-gray-50 rounded-lg transition"
+          >
+            <span>Change Password</span>
+            <span className="text-gray-400">{pwOpen ? '▲' : '▼'}</span>
+          </button>
+
+          {pwOpen && (
+            <div className="px-6 pb-6">
+              {pwError && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">{pwError}</div>
+              )}
+              {pwMessage && (
+                <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">{pwMessage}</div>
+              )}
+              <form onSubmit={handleChangePassword} className="space-y-4 max-w-sm">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                  <input
+                    type="password"
+                    value={currentPassword}
+                    onChange={e => setCurrentPassword(e.target.value)}
+                    className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={e => setNewPassword(e.target.value)}
+                    className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={pwLoading}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {pwLoading ? 'Saving...' : 'Update Password'}
+                </button>
+              </form>
+            </div>
+          )}
         </div>
 
         {deleteError && (
