@@ -14,9 +14,12 @@ export default async function handler(req, res) {
 
   const token = randomBytes(32).toString('hex');
 
+  const expiresAt = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
+
   await prisma.passwordResetToken.create({
     data: {
       token,
+      expiresAt,
       user: { connect: { id: user.id } },
     },
   });

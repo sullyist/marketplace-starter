@@ -8,6 +8,54 @@ const prisma = new PrismaClient();
 export default async function handler(req, res) {
   const { id } = req.query;
 
+  if (req.method === 'GET') {
+    try {
+      const product = await prisma.product.findUnique({ where: { id } });
+      if (!product) return res.status(404).json({ error: 'Product not found' });
+      return res.status(200).json(product);
+    } catch (error) {
+      return res.status(500).json({ error: 'Failed to fetch product' });
+    }
+  }
+
+  if (req.method === 'PUT') {
+    const session = await getServerSession(req, res, authOptions);
+    if (!session) return res.status(401).json({ error: 'Not authenticated' });
+
+    try {
+      const product = await prisma.product.findUnique({ where: { id } });
+      if (!product) return res.status(404).json({ error: 'Product not found' });
+      if (product.userId !== session.user.id) return res.status(403).json({ error: 'Not authorized' });
+
+      const { title, make, model, year, mileage, condition, price, engineSize, power, bikeType, location, description, imageUrl } = req.body;
+
+      const updated = await prisma.product.update({
+        where: { id },
+        data: {
+          title,
+          make,
+          model,
+          makeModel: `${make} ${model}`,
+          year: year?.toString(),
+          mileage: mileage?.toString(),
+          condition,
+          price: parseFloat(price),
+          engineSize: engineSize?.toString(),
+          power,
+          bikeType,
+          location,
+          description,
+          imageUrl,
+        },
+      });
+
+      return res.status(200).json(updated);
+    } catch (error) {
+      console.error('Error updating product:', error);
+      return res.status(500).json({ error: 'Failed to update product' });
+    }
+  }
+
   if (req.method === 'DELETE') {
     // Get the logged-in user
     const session = await getServerSession(req, res, authOptions);
@@ -41,6 +89,6 @@ export default async function handler(req, res) {
     }
   }
 
-  res.setHeader('Allow', ['DELETE']);
+  res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
   return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
 }

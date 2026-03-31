@@ -26,7 +26,7 @@ export default function Navbar() {
         {/* Desktop nav */}
         <div className="hidden md:flex space-x-6">
           <Link href="/">Home</Link>
-          <Link href="/create">Post Ad</Link>
+          <Link href="/post-ad">Post Ad</Link>
           <Link href="/dashboard">Dashboard</Link>
           <Link href="/login">Login</Link>
 	  <Link href="/listings">Listings</Link>
@@ -46,7 +46,7 @@ export default function Navbar() {
             <Link href="/" onClick={toggleMenu} className="block">
               Home
             </Link>
-            <Link href="/create" onClick={toggleMenu} className="block">
+            <Link href="/post-ad" onClick={toggleMenu} className="block">
               Post Ad
             </Link>
             <Link href="/dashboard" onClick={toggleMenu} className="block">
