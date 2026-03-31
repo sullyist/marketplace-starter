@@ -1,12 +1,14 @@
 // pages/index.js
 import Link from 'next/link';
 import { PrismaClient } from '@prisma/client';
+import ChatBot from '../components/ChatBot';
 
 const prisma = new PrismaClient();
 
 export default function Home({ recentListings }) {
   return (
     <div className="min-h-screen">
+      <ChatBot />
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
         <div className="max-w-6xl mx-auto px-6 text-center">

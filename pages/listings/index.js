@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import Link from 'next/link';
 import { useState } from 'react';
+import ChatBot from '../../components/ChatBot';
 
 const prisma = new PrismaClient();
 
@@ -553,6 +554,7 @@ export default function Listings({ products, totalCount, totalPages, currentPage
           </div>
         )}
       </section>
+      <ChatBot />
     </div>
   );
 }
