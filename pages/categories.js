@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Zap, Sunset, Mountain, Map, Flame, Wind, Coffee, Battery, Gauge, Compass, Wrench, Anchor, Shield, Navigation, Globe, TreePine, Pickaxe, Clock, Bike, Route } from 'lucide-react';
+import { Zap, Sunset, Mountain, Map, Flame, Wind, Coffee, Battery, Gauge, Compass, Wrench, Anchor, Shield, Navigation, TreePine, Pickaxe, Clock, Bike, Route } from 'lucide-react';
 
 const bikeCategories = [
   { type: 'Sport',         description: 'High-performance motorcycles built for speed and agility',                  Icon: Zap,        color: 'from-red-500 to-orange-500' },
@@ -16,7 +16,6 @@ const bikeCategories = [
   { type: 'Streetfighter', description: 'Aggressive naked sport bikes with upright riding position',                 Icon: Shield,     color: 'from-rose-600 to-pink-700' },
   { type: 'Supermoto',     description: 'Dual-sport bikes with street tires, great for urban riding',                Icon: Navigation, color: 'from-lime-500 to-green-600' },
   { type: 'Electric',      description: 'Zero emissions electric motorcycles for eco-conscious riders',              Icon: Battery,    color: 'from-emerald-500 to-teal-600' },
-  { type: 'Sport Touring', description: 'Combines sport bike performance with touring comfort',                      Icon: Globe,      color: 'from-violet-500 to-purple-600' },
   { type: 'Sport Tourer', description: 'Performance-focused bikes with long-distance capability',                    Icon: Route,      color: 'from-indigo-500 to-violet-600' },
   { type: 'Enduro',        description: 'Lightweight off-road racing bikes for trail riding',                        Icon: TreePine,   color: 'from-yellow-500 to-amber-600' },
   { type: 'Dirt Bike',     description: 'Pure off-road motorcycles, not street legal',                               Icon: Pickaxe,    color: 'from-amber-700 to-orange-800' },

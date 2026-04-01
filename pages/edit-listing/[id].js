@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 const BIKE_TYPES = [
   'Sport', 'Cruiser', 'Adventure', 'Touring', 'Standard', 'Dual-Sport',
   'Naked', 'Scooter', 'Cafe Racer', 'Bobber', 'Chopper', 'Streetfighter',
-  'Supermoto', 'Electric', 'Sport Touring', 'Sport Tourer', 'Enduro', 'Dirt Bike', 'Classic', 'Moped',
+  'Supermoto', 'Electric', 'Sport Tourer', 'Enduro', 'Dirt Bike', 'Classic', 'Moped',
 ];
 
 export default function EditListing() {

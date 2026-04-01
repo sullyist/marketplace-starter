@@ -16,7 +16,6 @@ const BIKE_TYPES = [
   'Streetfighter',
   'Supermoto',
   'Electric',
-  'Sport Touring',
   'Sport Tourer',
   'Enduro',
   'Dirt Bike',

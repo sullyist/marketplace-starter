@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import Link from 'next/link';
 import { useState } from 'react';
 import ChatBot from '../../components/ChatBot';
-import { Zap, Sunset, Mountain, Map, Flame, Wind, Coffee, Battery, Gauge, Compass, Wrench, Anchor, Shield, Navigation, Globe, TreePine, Pickaxe, Clock, Bike, Route } from 'lucide-react';
+import { Zap, Sunset, Mountain, Map, Flame, Wind, Coffee, Battery, Gauge, Compass, Wrench, Anchor, Shield, Navigation, TreePine, Pickaxe, Clock, Bike, Route } from 'lucide-react';
 
 const prisma = new PrismaClient();
 
@@ -21,7 +21,6 @@ const bikeTypes = [
   'Streetfighter',
   'Supermoto',
   'Electric',
-  'Sport Touring',
   'Sport Tourer',
   'Enduro',
   'Dirt Bike',
@@ -44,7 +43,6 @@ const categoryCards = [
   { type: 'Streetfighter', Icon: Shield,     color: 'from-rose-600 to-pink-700' },
   { type: 'Supermoto',     Icon: Navigation, color: 'from-lime-500 to-green-600' },
   { type: 'Electric',      Icon: Battery,    color: 'from-emerald-500 to-teal-600' },
-  { type: 'Sport Touring', Icon: Globe,      color: 'from-violet-500 to-purple-600' },
   { type: 'Sport Tourer', Icon: Route,      color: 'from-indigo-500 to-violet-600' },
   { type: 'Enduro',        Icon: TreePine,   color: 'from-yellow-500 to-amber-600' },
   { type: 'Dirt Bike',     Icon: Pickaxe,    color: 'from-amber-700 to-orange-800' },
