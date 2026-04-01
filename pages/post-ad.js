@@ -17,6 +17,7 @@ const BIKE_TYPES = [
   'Supermoto',
   'Electric',
   'Sport Touring',
+  'Sport Tourer',
   'Enduro',
   'Dirt Bike',
   'Classic',
@@ -30,6 +31,7 @@ export default function PostAd() {
   const [model, setModel] = useState("");
   const [year, setYear] = useState("");
   const [mileage, setMileage] = useState("");
+  const [mileageUnit, setMileageUnit] = useState("km");
   const [condition, setCondition] = useState("");
   const [price, setPrice] = useState("");
   const [engineSize, setEngineSize] = useState("");
@@ -98,6 +100,7 @@ export default function PostAd() {
         model,
         year,
         mileage,
+        mileageUnit,
         condition,
         price,
         engineSize,
@@ -197,16 +200,26 @@ export default function PostAd() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Mileage (km) *</label>
-              <input
-                type="number"
-                placeholder="e.g., 15000"
-                value={mileage}
-                onChange={(e) => setMileage(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-                min="0"
-              />
+              <label className="block text-sm font-medium mb-1">Mileage *</label>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  placeholder="e.g., 15000"
+                  value={mileage}
+                  onChange={(e) => setMileage(e.target.value)}
+                  className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                  min="0"
+                />
+                <select
+                  value={mileageUnit}
+                  onChange={(e) => setMileageUnit(e.target.value)}
+                  className="rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="km">km</option>
+                  <option value="miles">miles</option>
+                </select>
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Condition *</label>

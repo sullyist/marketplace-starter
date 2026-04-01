@@ -99,7 +99,7 @@ export default function ListingDetail({ product }) {
                 {product.mileage && product.mileage !== 'Unknown' && (
                   <div className="flex justify-between border-b pb-2">
                     <span className="font-medium text-gray-700">Mileage:</span>
-                    <span className="text-gray-900">{parseInt(product.mileage).toLocaleString()} km</span>
+                    <span className="text-gray-900">{parseInt(product.mileage).toLocaleString()} {product.mileageUnit || 'km'}</span>
                   </div>
                 )}
                 {product.condition && product.condition !== 'Unknown' && (

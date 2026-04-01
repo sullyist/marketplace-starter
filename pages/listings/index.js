@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import Link from 'next/link';
 import { useState } from 'react';
 import ChatBot from '../../components/ChatBot';
-import { Zap, Sunset, Mountain, Map, Flame, Wind, Coffee, Battery, Gauge, Compass, Wrench, Anchor, Shield, Navigation, Globe, TreePine, Pickaxe, Clock, Bike } from 'lucide-react';
+import { Zap, Sunset, Mountain, Map, Flame, Wind, Coffee, Battery, Gauge, Compass, Wrench, Anchor, Shield, Navigation, Globe, TreePine, Pickaxe, Clock, Bike, Route } from 'lucide-react';
 
 const prisma = new PrismaClient();
 
@@ -22,6 +22,7 @@ const bikeTypes = [
   'Supermoto',
   'Electric',
   'Sport Touring',
+  'Sport Tourer',
   'Enduro',
   'Dirt Bike',
   'Classic',
@@ -44,6 +45,7 @@ const categoryCards = [
   { type: 'Supermoto',     Icon: Navigation, color: 'from-lime-500 to-green-600' },
   { type: 'Electric',      Icon: Battery,    color: 'from-emerald-500 to-teal-600' },
   { type: 'Sport Touring', Icon: Globe,      color: 'from-violet-500 to-purple-600' },
+  { type: 'Sport Tourer', Icon: Route,      color: 'from-indigo-500 to-violet-600' },
   { type: 'Enduro',        Icon: TreePine,   color: 'from-yellow-500 to-amber-600' },
   { type: 'Dirt Bike',     Icon: Pickaxe,    color: 'from-amber-700 to-orange-800' },
   { type: 'Classic',       Icon: Clock,      color: 'from-stone-500 to-stone-700' },
@@ -475,7 +477,7 @@ export default function Listings({ products, totalCount, totalPages, currentPage
                     )}
                     {product.mileage && product.mileage !== 'Unknown' && (
                       <p className="text-gray-600 mb-1">
-                        <span className="font-medium">Mileage:</span> {parseInt(product.mileage).toLocaleString()} km
+                        <span className="font-medium">Mileage:</span> {parseInt(product.mileage).toLocaleString()} {product.mileageUnit || 'km'}
                       </p>
                     )}
                     {product.condition && product.condition !== 'Unknown' && (

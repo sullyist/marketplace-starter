@@ -27,7 +27,7 @@ export default async function handler(req, res) {
       if (!product) return res.status(404).json({ error: 'Product not found' });
       if (product.userId !== session.user.id) return res.status(403).json({ error: 'Not authorized' });
 
-      const { title, make, model, year, mileage, condition, price, engineSize, power, bikeType, location, description, imageUrl } = req.body;
+      const { title, make, model, year, mileage, mileageUnit, condition, price, engineSize, power, bikeType, location, description, imageUrl } = req.body;
 
       const updated = await prisma.product.update({
         where: { id },
@@ -38,6 +38,7 @@ export default async function handler(req, res) {
           makeModel: `${make} ${model}`,
           year: year?.toString(),
           mileage: mileage?.toString(),
+          mileageUnit: mileageUnit || 'km',
           condition,
           price: parseFloat(price),
           engineSize: engineSize?.toString(),

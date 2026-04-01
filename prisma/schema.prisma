@@ -29,6 +29,7 @@ model Product {
   makeModel   String   @default("Unknown")
   year        String   @default("Unknown")
   mileage     String   @default("Unknown")
+  mileageUnit String   @default("km")
   condition   String   @default("Unknown")
   description String
   engineSize String @default("Unknown")

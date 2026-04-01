@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 const BIKE_TYPES = [
   'Sport', 'Cruiser', 'Adventure', 'Touring', 'Standard', 'Dual-Sport',
   'Naked', 'Scooter', 'Cafe Racer', 'Bobber', 'Chopper', 'Streetfighter',
-  'Supermoto', 'Electric', 'Sport Touring', 'Enduro', 'Dirt Bike', 'Classic', 'Moped',
+  'Supermoto', 'Electric', 'Sport Touring', 'Sport Tourer', 'Enduro', 'Dirt Bike', 'Classic', 'Moped',
 ];
 
 export default function EditListing() {
@@ -18,6 +18,7 @@ export default function EditListing() {
   const [model, setModel] = useState('');
   const [year, setYear] = useState('');
   const [mileage, setMileage] = useState('');
+  const [mileageUnit, setMileageUnit] = useState('km');
   const [condition, setCondition] = useState('');
   const [price, setPrice] = useState('');
   const [engineSize, setEngineSize] = useState('');
@@ -42,6 +43,7 @@ export default function EditListing() {
         setModel(data.model || '');
         setYear(data.year || '');
         setMileage(data.mileage || '');
+        setMileageUnit(data.mileageUnit || 'km');
         setCondition(data.condition || '');
         setPrice(data.price || '');
         setEngineSize(data.engineSize || '');
@@ -99,7 +101,7 @@ export default function EditListing() {
       const res = await fetch(`/api/products/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, make, model, year, mileage, condition, price, engineSize, power, bikeType, location, description, imageUrl }),
+        body: JSON.stringify({ title, make, model, year, mileage, mileageUnit, condition, price, engineSize, power, bikeType, location, description, imageUrl }),
       });
 
       const data = await res.json();
@@ -170,9 +172,16 @@ export default function EditListing() {
                 className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required min="1900" max="2030" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Mileage (km) *</label>
-              <input type="number" value={mileage} onChange={e => setMileage(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required min="0" />
+              <label className="block text-sm font-medium mb-1">Mileage *</label>
+              <div className="flex gap-2">
+                <input type="number" value={mileage} onChange={e => setMileage(e.target.value)}
+                  className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required min="0" />
+                <select value={mileageUnit} onChange={e => setMileageUnit(e.target.value)}
+                  className="rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="km">km</option>
+                  <option value="miles">miles</option>
+                </select>
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Condition *</label>
