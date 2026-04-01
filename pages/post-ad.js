@@ -184,7 +184,7 @@ export default function PostAd() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Year *</label>
               <input
@@ -197,28 +197,6 @@ export default function PostAd() {
                 min="1900"
                 max="2030"
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Mileage *</label>
-              <div className="flex gap-2">
-                <input
-                  type="number"
-                  placeholder="e.g., 15000"
-                  value={mileage}
-                  onChange={(e) => setMileage(e.target.value)}
-                  className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                  min="0"
-                />
-                <select
-                  value={mileageUnit}
-                  onChange={(e) => setMileageUnit(e.target.value)}
-                  className="rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="km">km</option>
-                  <option value="miles">miles</option>
-                </select>
-              </div>
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Condition *</label>
@@ -234,6 +212,29 @@ export default function PostAd() {
                 <option value="Good">Good</option>
                 <option value="Fair">Fair</option>
                 <option value="Poor">Poor</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Mileage *</label>
+            <div className="flex gap-2">
+              <input
+                type="number"
+                placeholder="e.g., 15000"
+                value={mileage}
+                onChange={(e) => setMileage(e.target.value)}
+                className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+                min="0"
+              />
+              <select
+                value={mileageUnit}
+                onChange={(e) => setMileageUnit(e.target.value)}
+                className="rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="km">km</option>
+                <option value="miles">miles</option>
               </select>
             </div>
           </div>
