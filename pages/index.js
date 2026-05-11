@@ -2,12 +2,20 @@
 import Link from 'next/link';
 import { PrismaClient } from '@prisma/client';
 import ChatBot from '../components/ChatBot';
+import Head from 'next/head';
 
 const prisma = new PrismaClient();
 
 export default function Home({ recentListings }) {
   return (
     <div className="min-h-screen">
+      <Head>
+        <title>MotoMarket — Buy & Sell Motorcycles in Ireland</title>
+        <meta name="description" content="Ireland's motorcycle marketplace. Buy and sell new and used motorcycles, find your perfect bike from sport to cruiser, adventure to classic." />
+        <meta property="og:title" content="MotoMarket — Buy & Sell Motorcycles in Ireland" />
+        <meta property="og:description" content="Ireland's motorcycle marketplace. Find your perfect bike today." />
+        <meta property="og:type" content="website" />
+      </Head>
       <ChatBot />
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">

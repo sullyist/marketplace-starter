@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Head from 'next/head';
 import { Zap, Sunset, Mountain, Map, Flame, Wind, Coffee, Battery, Gauge, Compass, Wrench, Anchor, Shield, Navigation, TreePine, Pickaxe, Clock, Bike, Route } from 'lucide-react';
 
 const bikeCategories = [
@@ -26,6 +27,10 @@ const bikeCategories = [
 export default function Categories() {
   return (
     <div className="min-h-screen bg-gray-50">
+      <Head>
+        <title>Motorcycle Categories — MotoMarket</title>
+        <meta name="description" content="Browse motorcycles by category. Sport, Cruiser, Adventure, Touring, Naked, Scooter, Cafe Racer, Electric and more." />
+      </Head>
       {/* Header */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
         <div className="max-w-6xl mx-auto px-6 text-center">

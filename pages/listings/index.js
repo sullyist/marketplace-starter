@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import Link from 'next/link';
 import { useState } from 'react';
 import ChatBot from '../../components/ChatBot';
+import Head from 'next/head';
 import { Zap, Sunset, Mountain, Map, Flame, Wind, Coffee, Battery, Gauge, Compass, Wrench, Anchor, Shield, Navigation, TreePine, Pickaxe, Clock, Bike, Route } from 'lucide-react';
 
 const prisma = new PrismaClient();
@@ -224,6 +225,10 @@ export default function Listings({ products, totalCount, totalPages, currentPage
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Head>
+        <title>Browse Motorcycles — MotoMarket</title>
+        <meta name="description" content="Browse hundreds of motorcycles for sale in Ireland. Filter by make, model, price, location and bike type." />
+      </Head>
       {/* Header Section */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
         <div className="max-w-6xl mx-auto px-6">

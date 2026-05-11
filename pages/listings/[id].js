@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 
 const prisma = new PrismaClient();
 
@@ -29,6 +30,14 @@ export default function ListingDetail({ product }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Head>
+        <title>{product.title} — MotoMarket</title>
+        <meta name="description" content={`${product.year} ${product.make} ${product.model} for sale in ${product.location}. ${product.condition} condition, ${parseInt(product.mileage).toLocaleString()} ${product.mileageUnit || 'km'}. €${product.price.toLocaleString()}.`} />
+        <meta property="og:title" content={`${product.title} — MotoMarket`} />
+        <meta property="og:description" content={`${product.year} ${product.make} ${product.model} for sale in ${product.location}. €${product.price.toLocaleString()}.`} />
+        <meta property="og:image" content={product.imageUrl} />
+        <meta property="og:type" content="product" />
+      </Head>
       {/* Header Section */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-12">
         <div className="max-w-6xl mx-auto px-6">

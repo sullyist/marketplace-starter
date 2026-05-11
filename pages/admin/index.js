@@ -12,6 +12,9 @@ export default function AdminPanel() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [listingsPage, setListingsPage] = useState(1);
+  const [usersPage, setUsersPage] = useState(1);
+  const ADMIN_PAGE_SIZE = 10;
 
   useEffect(() => {
     if (status === 'unauthenticated') router.push('/login');
@@ -83,6 +86,11 @@ export default function AdminPanel() {
   const newListingsThisWeek = products.filter(p => new Date(p.createdAt) > thisWeek).length;
   const newUsersThisWeek = users.filter(u => new Date(u.createdAt) > thisWeek).length;
   const adminCount = users.filter(u => u.role === 'admin').length;
+
+  const listingsTotalPages = Math.ceil(products.length / ADMIN_PAGE_SIZE);
+  const paginatedProducts = products.slice((listingsPage - 1) * ADMIN_PAGE_SIZE, listingsPage * ADMIN_PAGE_SIZE);
+  const usersTotalPages = Math.ceil(users.length / ADMIN_PAGE_SIZE);
+  const paginatedUsers = users.slice((usersPage - 1) * ADMIN_PAGE_SIZE, usersPage * ADMIN_PAGE_SIZE);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -163,7 +171,7 @@ export default function AdminPanel() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
-                    {products.map(product => (
+                    {paginatedProducts.map(product => (
                       <tr key={product.id} className="hover:bg-gray-50 transition">
                         <td className="px-4 py-3">
                           <div className="font-medium text-gray-900">{product.title}</div>
@@ -200,6 +208,18 @@ export default function AdminPanel() {
                 </table>
               </div>
             )}
+            {listingsTotalPages > 1 && (
+              <div className="flex justify-between items-center px-4 py-3 border-t border-gray-100 text-sm">
+                <span className="text-gray-500">Showing {(listingsPage - 1) * ADMIN_PAGE_SIZE + 1}–{Math.min(listingsPage * ADMIN_PAGE_SIZE, products.length)} of {products.length}</span>
+                <div className="flex gap-2">
+                  <button onClick={() => setListingsPage(p => p - 1)} disabled={listingsPage === 1}
+                    className="px-3 py-1 rounded border text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed">← Prev</button>
+                  <span className="px-3 py-1 text-gray-600">{listingsPage} / {listingsTotalPages}</span>
+                  <button onClick={() => setListingsPage(p => p + 1)} disabled={listingsPage === listingsTotalPages}
+                    className="px-3 py-1 rounded border text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed">Next →</button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -221,7 +241,7 @@ export default function AdminPanel() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
-                    {users.map(user => (
+                    {paginatedUsers.map(user => (
                       <tr key={user.id} className="hover:bg-gray-50 transition">
                         <td className="px-4 py-3">
                           <div className="font-medium text-gray-900">{user.name || '—'}</div>
@@ -253,6 +273,18 @@ export default function AdminPanel() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            )}
+            {usersTotalPages > 1 && (
+              <div className="flex justify-between items-center px-4 py-3 border-t border-gray-100 text-sm">
+                <span className="text-gray-500">Showing {(usersPage - 1) * ADMIN_PAGE_SIZE + 1}–{Math.min(usersPage * ADMIN_PAGE_SIZE, users.length)} of {users.length}</span>
+                <div className="flex gap-2">
+                  <button onClick={() => setUsersPage(p => p - 1)} disabled={usersPage === 1}
+                    className="px-3 py-1 rounded border text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed">← Prev</button>
+                  <span className="px-3 py-1 text-gray-600">{usersPage} / {usersTotalPages}</span>
+                  <button onClick={() => setUsersPage(p => p + 1)} disabled={usersPage === usersTotalPages}
+                    className="px-3 py-1 rounded border text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed">Next →</button>
+                </div>
               </div>
             )}
           </div>
