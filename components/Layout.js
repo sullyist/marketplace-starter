@@ -1,15 +1,38 @@
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
 export default function Layout({ children }) {
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === 'admin';
   const [menuOpen, setMenuOpen] = useState(false);
+  const [unread, setUnread] = useState(0);
   const router = useRouter();
 
   const closeMenu = () => setMenuOpen(false);
+
+  useEffect(() => {
+    if (!session) {
+      setUnread(0);
+      return;
+    }
+    let cancelled = false;
+    const fetchUnread = async () => {
+      try {
+        const res = await fetch('/api/messages/unread-count');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled) setUnread(data.count || 0);
+      } catch {}
+    };
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 30000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [session, router.asPath]);
 
   // Close menu on route change
   if (typeof window !== 'undefined') {
@@ -32,6 +55,14 @@ export default function Layout({ children }) {
             {session && (
               <>
                 <Link href="/post-ad" className="text-gray-600 hover:text-blue-600 font-medium transition">Post Ad</Link>
+                <Link href="/messages" className="text-gray-600 hover:text-blue-600 font-medium transition relative inline-flex items-center">
+                  Messages
+                  {unread > 0 && (
+                    <span className="ml-1.5 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 bg-blue-600 text-white text-xs font-semibold rounded-full">
+                      {unread > 99 ? '99+' : unread}
+                    </span>
+                  )}
+                </Link>
                 <Link href="/dashboard" className="text-gray-600 hover:text-blue-600 font-medium transition">Dashboard</Link>
                 {isAdmin && (
                   <Link href="/admin" className="text-red-600 hover:text-red-700 font-medium transition">Admin</Link>
@@ -83,6 +114,14 @@ export default function Layout({ children }) {
             {session && (
               <>
                 <Link href="/post-ad" onClick={closeMenu} className="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">Post Ad</Link>
+                <Link href="/messages" onClick={closeMenu} className="flex items-center justify-between px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">
+                  <span>Messages</span>
+                  {unread > 0 && (
+                    <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 bg-blue-600 text-white text-xs font-semibold rounded-full">
+                      {unread > 99 ? '99+' : unread}
+                    </span>
+                  )}
+                </Link>
                 <Link href="/dashboard" onClick={closeMenu} className="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">Dashboard</Link>
                 {isAdmin && (
                   <Link href="/admin" onClick={closeMenu} className="block px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 font-medium">Admin</Link>

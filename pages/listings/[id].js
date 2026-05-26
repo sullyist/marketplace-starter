@@ -2,6 +2,8 @@ import { PrismaClient } from '@prisma/client';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
+import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 
 const prisma = new PrismaClient();
 
@@ -22,6 +24,33 @@ export async function getServerSideProps(context) {
 
 export default function ListingDetail({ product }) {
   const router = useRouter();
+  const { data: session } = useSession();
+  const [starting, setStarting] = useState(false);
+  const [contactError, setContactError] = useState('');
+  const isOwner = session?.user?.id === product.userId;
+
+  const handleContact = async () => {
+    if (!session) {
+      router.push(`/login?callbackUrl=/listings/${product.id}`);
+      return;
+    }
+    setStarting(true);
+    setContactError('');
+    try {
+      const res = await fetch('/api/messages/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ listingId: product.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not start conversation');
+      router.push(`/messages/${data.id}`);
+    } catch (err) {
+      setContactError(err.message);
+      setStarting(false);
+    }
+  };
+
   const formattedDate = new Date(product.createdAt).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
@@ -150,22 +179,26 @@ export default function ListingDetail({ product }) {
                   <span className="font-medium text-gray-700 mr-2">Name:</span>
                   <span className="text-gray-900">{product.user.name || 'Not provided'}</span>
                 </div>
-                <div className="flex items-center">
-                  <span className="font-medium text-gray-700 mr-2">Email:</span>
-                  <a
-                    href={`mailto:${product.user.email}`}
-                    className="text-blue-600 hover:text-blue-800 hover:underline"
-                  >
-                    {product.user.email}
-                  </a>
-                </div>
               </div>
-              <button
-                onClick={() => window.location.href = `mailto:${product.user.email}?subject=Inquiry about ${product.title}`}
-                className="w-full mt-4 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
-              >
-                Contact Seller
-              </button>
+              {isOwner ? (
+                <p className="mt-4 text-sm text-gray-500 italic">This is your listing.</p>
+              ) : (
+                <>
+                  <button
+                    onClick={handleContact}
+                    disabled={starting}
+                    className="w-full mt-4 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {starting ? 'Opening…' : 'Contact Seller'}
+                  </button>
+                  {contactError && (
+                    <p className="mt-2 text-sm text-red-600">{contactError}</p>
+                  )}
+                  {!session && (
+                    <p className="mt-2 text-xs text-gray-500 text-center">You'll be asked to log in first.</p>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
