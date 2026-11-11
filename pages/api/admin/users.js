@@ -19,6 +19,8 @@ export default async function handler(req, res) {
           name: true,
           email: true,
           role: true,
+          dealerUntil: true,
+          stripeSubscriptionId: true,
           createdAt: true,
           _count: { select: { products: true } },
         },
