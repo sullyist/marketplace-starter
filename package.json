@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.0.0",
+    "@stripe/stripe-js": "^10.2.1",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.7.0",
     "formidable": "^3.5.4",
@@ -20,7 +21,8 @@
     "next-auth": "^4.24.11",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "resend": "^6.26.0"
+    "resend": "^6.26.0",
+    "stripe": "^23.1.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.21",
