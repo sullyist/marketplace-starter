@@ -367,6 +367,7 @@ export default function Listings({ products, totalCount, totalPages, currentPage
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <input
                 type="number"
+                inputMode="numeric"
                 placeholder="Min Year"
                 value={minYear}
                 onChange={(e) => setMinYear(e.target.value)}
@@ -374,6 +375,7 @@ export default function Listings({ products, totalCount, totalPages, currentPage
               />
               <input
                 type="number"
+                inputMode="numeric"
                 placeholder="Max Year"
                 value={maxYear}
                 onChange={(e) => setMaxYear(e.target.value)}
@@ -381,6 +383,7 @@ export default function Listings({ products, totalCount, totalPages, currentPage
               />
               <input
                 type="number"
+                inputMode="numeric"
                 placeholder="Max Mileage (km)"
                 value={maxMileage}
                 onChange={(e) => setMaxMileage(e.target.value)}
@@ -403,6 +406,7 @@ export default function Listings({ products, totalCount, totalPages, currentPage
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               <input
                 type="number"
+                inputMode="numeric"
                 placeholder="Min Price (€)"
                 value={minPrice}
                 onChange={(e) => setMinPrice(e.target.value)}
@@ -410,6 +414,7 @@ export default function Listings({ products, totalCount, totalPages, currentPage
               />
               <input
                 type="number"
+                inputMode="numeric"
                 placeholder="Max Price (€)"
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(e.target.value)}

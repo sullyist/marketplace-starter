@@ -168,7 +168,7 @@ export default function EditListing() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Year *</label>
-              <input type="number" value={year} onChange={e => setYear(e.target.value)}
+              <input type="number" inputMode="numeric" value={year} onChange={e => setYear(e.target.value)}
                 className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required min="1900" max="2030" />
             </div>
             <div>
@@ -188,7 +188,7 @@ export default function EditListing() {
           <div>
             <label className="block text-sm font-medium mb-1">Mileage *</label>
             <div className="flex gap-2">
-              <input type="number" value={mileage} onChange={e => setMileage(e.target.value)}
+              <input type="number" inputMode="numeric" value={mileage} onChange={e => setMileage(e.target.value)}
                 className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required min="0" />
               <select value={mileageUnit} onChange={e => setMileageUnit(e.target.value)}
                 className="rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -201,12 +201,12 @@ export default function EditListing() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Price (€) *</label>
-              <input type="number" value={price} onChange={e => setPrice(e.target.value)}
+              <input type="number" inputMode="decimal" value={price} onChange={e => setPrice(e.target.value)}
                 className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required min="0" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Engine Size (cc) *</label>
-              <input type="number" value={engineSize} onChange={e => setEngineSize(e.target.value)}
+              <input type="number" inputMode="numeric" value={engineSize} onChange={e => setEngineSize(e.target.value)}
                 className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required min="0" />
             </div>
           </div>

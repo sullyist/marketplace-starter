@@ -18,12 +18,12 @@ export default function Home({ recentListings }) {
       </Head>
       <ChatBot />
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
+      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-14 sm:py-20">
         <div className="max-w-6xl mx-auto px-6 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold mb-6">
             Buy & Sell Motorcycles with Confidence
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-blue-100">
+          <p className="text-lg sm:text-xl md:text-2xl mb-8 text-blue-100">
             The trusted marketplace connecting motorcycle enthusiasts across the country
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

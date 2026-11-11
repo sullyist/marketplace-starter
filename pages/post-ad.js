@@ -189,6 +189,7 @@ export default function PostAd() {
               <label className="block text-sm font-medium mb-1">Year *</label>
               <input
                 type="number"
+                inputMode="numeric"
                 placeholder="e.g., 2020"
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
@@ -221,6 +222,7 @@ export default function PostAd() {
             <div className="flex gap-2">
               <input
                 type="number"
+                inputMode="numeric"
                 placeholder="e.g., 15000"
                 value={mileage}
                 onChange={(e) => setMileage(e.target.value)}
@@ -244,6 +246,7 @@ export default function PostAd() {
               <label className="block text-sm font-medium mb-1">Price (€) *</label>
               <input
                 type="number"
+                inputMode="decimal"
                 placeholder="5000"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
@@ -257,6 +260,7 @@ export default function PostAd() {
               <label className="block text-sm font-medium mb-1">Engine Size (cc) *</label>
               <input
                 type="number"
+                inputMode="numeric"
                 placeholder="600"
                 value={engineSize}
                 onChange={(e) => setEngineSize(e.target.value)}

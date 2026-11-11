@@ -88,7 +88,7 @@ export default function ChatBot() {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 w-80 bg-white border shadow-lg rounded z-50">
+    <div className="fixed bottom-4 right-4 left-4 sm:left-auto sm:w-80 bg-white border shadow-lg rounded z-50">
       {/* Header with minimize button */}
       <div className="bg-blue-600 text-white px-4 py-2 rounded-t flex justify-between items-center">
         <span className="font-semibold">Search Assistant</span>
@@ -116,16 +116,17 @@ export default function ChatBot() {
               </div>
             ))}
           </div>
-          <div className="flex space-x-2">
+          <div className="flex gap-2">
             <input
-              type="text"
-              className="flex-1 border px-2 py-1 rounded text-sm"
+              type="search"
+              inputMode="search"
+              className="flex-1 border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Enter make, model, or category to search"
+              placeholder="Search make, model, category…"
             />
-            <button onClick={handleSend} className="px-3 py-1 bg-blue-600 text-white rounded text-sm">
+            <button onClick={handleSend} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium">
               Send
             </button>
           </div>
