@@ -1,6 +1,13 @@
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { FEATURED_LISTING, formatPrice } from '../lib/pricing';
+
+function daysLeft(featuredUntil) {
+  if (!featuredUntil) return 0;
+  const ms = new Date(featuredUntil).getTime() - Date.now();
+  return ms > 0 ? Math.ceil(ms / (1000 * 60 * 60 * 24)) : 0;
+}
 
 export default function Dashboard() {
   const { data: session } = useSession();
@@ -8,6 +15,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [deleteLoading, setDeleteLoading] = useState(null);
   const [deleteError, setDeleteError] = useState('');
+  const [featureLoading, setFeatureLoading] = useState(null);
+  const [featureError, setFeatureError] = useState('');
 
   const [pwOpen, setPwOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
@@ -66,6 +75,24 @@ export default function Dashboard() {
   useEffect(() => {
     fetchProducts();
   }, [session]);
+
+  const handleFeature = async (productId) => {
+    setFeatureError('');
+    setFeatureLoading(productId);
+    try {
+      const res = await fetch('/api/stripe/checkout-featured', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ listingId: productId }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) throw new Error(data.error || 'Could not start checkout');
+      window.location.href = data.url;
+    } catch (err) {
+      setFeatureError(err.message || 'Failed to start checkout');
+      setFeatureLoading(null);
+    }
+  };
 
   const handleDelete = async (productId, productTitle) => {
     if (!window.confirm(`Are you sure you want to delete "${productTitle}"?`)) return;
@@ -182,6 +209,12 @@ export default function Dashboard() {
           </div>
         )}
 
+        {featureError && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+            {featureError}
+          </div>
+        )}
+
         {loading ? (
           <div className="text-center py-12">
             <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
@@ -202,7 +235,12 @@ export default function Dashboard() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product) => (
-              <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden relative">
+                {daysLeft(product.featuredUntil) > 0 && (
+                  <span className="absolute top-3 left-3 z-10 px-2 py-1 text-xs font-bold bg-amber-400 text-amber-950 rounded shadow">
+                    ★ Featured · {daysLeft(product.featuredUntil)}d left
+                  </span>
+                )}
                 {product.imageUrl && (
                   <img
                     src={product.imageUrl}
@@ -226,6 +264,18 @@ export default function Dashboard() {
                   <p className="text-2xl font-bold text-blue-600 mb-4">
                     €{product.price.toLocaleString()}
                   </p>
+
+                  <button
+                    onClick={() => handleFeature(product.id)}
+                    disabled={featureLoading === product.id}
+                    className="w-full mb-2 px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 font-medium transition disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {featureLoading === product.id
+                      ? 'Opening checkout…'
+                      : daysLeft(product.featuredUntil) > 0
+                        ? `★ Extend by ${FEATURED_LISTING.durationDays} days — ${formatPrice(FEATURED_LISTING.amount)}`
+                        : `★ Feature for ${FEATURED_LISTING.durationDays} days — ${formatPrice(FEATURED_LISTING.amount)}`}
+                  </button>
 
                   <div className="flex gap-2">
                     <Link

@@ -4,8 +4,15 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { FEATURED_LISTING, formatPrice } from '../../lib/pricing';
 
 const prisma = new PrismaClient();
+
+function daysLeft(featuredUntil) {
+  if (!featuredUntil) return 0;
+  const ms = new Date(featuredUntil).getTime() - Date.now();
+  return ms > 0 ? Math.ceil(ms / (1000 * 60 * 60 * 24)) : 0;
+}
 
 export async function getServerSideProps(context) {
   const product = await prisma.product.findUnique({
@@ -27,7 +34,28 @@ export default function ListingDetail({ product }) {
   const { data: session } = useSession();
   const [starting, setStarting] = useState(false);
   const [contactError, setContactError] = useState('');
+  const [featuring, setFeaturing] = useState(false);
+  const [featureError, setFeatureError] = useState('');
   const isOwner = session?.user?.id === product.userId;
+  const featuredDaysLeft = daysLeft(product.featuredUntil);
+
+  const handleFeature = async () => {
+    setFeatureError('');
+    setFeaturing(true);
+    try {
+      const res = await fetch('/api/stripe/checkout-featured', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ listingId: product.id }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) throw new Error(data.error || 'Could not start checkout');
+      window.location.href = data.url;
+    } catch (err) {
+      setFeatureError(err.message || 'Failed to start checkout');
+      setFeaturing(false);
+    }
+  };
 
   const handleContact = async () => {
     if (!session) {
@@ -181,7 +209,26 @@ export default function ListingDetail({ product }) {
                 </div>
               </div>
               {isOwner ? (
-                <p className="mt-4 text-sm text-gray-500 italic">This is your listing.</p>
+                <div className="mt-4 space-y-3">
+                  <p className="text-sm text-gray-500 italic">This is your listing.</p>
+                  {featuredDaysLeft > 0 && (
+                    <p className="text-sm font-semibold text-amber-700">★ Featured — {featuredDaysLeft} day{featuredDaysLeft === 1 ? '' : 's'} left</p>
+                  )}
+                  <button
+                    onClick={handleFeature}
+                    disabled={featuring}
+                    className="w-full px-6 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {featuring
+                      ? 'Opening checkout…'
+                      : featuredDaysLeft > 0
+                        ? `★ Extend by ${FEATURED_LISTING.durationDays} days — ${formatPrice(FEATURED_LISTING.amount)}`
+                        : `★ Feature for ${FEATURED_LISTING.durationDays} days — ${formatPrice(FEATURED_LISTING.amount)}`}
+                  </button>
+                  {featureError && (
+                    <p className="text-sm text-red-600">{featureError}</p>
+                  )}
+                </div>
               ) : (
                 <>
                   <button

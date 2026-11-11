@@ -99,30 +99,38 @@ export async function getServerSideProps(context) {
   };
 
   // Determine sort order
-  let orderBy;
+  let userSort;
   switch (sortBy) {
     case 'price-low':
-      orderBy = { price: 'asc' };
+      userSort = { price: 'asc' };
       break;
     case 'price-high':
-      orderBy = { price: 'desc' };
+      userSort = { price: 'desc' };
       break;
     case 'year-new':
-      orderBy = { year: 'desc' };
+      userSort = { year: 'desc' };
       break;
     case 'year-old':
-      orderBy = { year: 'asc' };
+      userSort = { year: 'asc' };
       break;
     case 'mileage-low':
-      orderBy = { mileage: 'asc' };
+      userSort = { mileage: 'asc' };
       break;
     case 'mileage-high':
-      orderBy = { mileage: 'desc' };
+      userSort = { mileage: 'desc' };
       break;
     case 'newest':
     default:
-      orderBy = { createdAt: 'desc' };
+      userSort = { createdAt: 'desc' };
   }
+
+  // Clear expired featured flags so the ORDER BY below sorts them correctly.
+  await prisma.product.updateMany({
+    where: { featuredUntil: { lt: new Date() } },
+    data: { featuredUntil: null },
+  });
+
+  const orderBy = [{ featuredUntil: { sort: 'desc', nulls: 'last' } }, userSort];
 
   const [products, totalCount] = await Promise.all([
     prisma.product.findMany({
@@ -454,7 +462,12 @@ export default function Listings({ products, totalCount, totalPages, currentPage
                 href={`/listings/${product.id}`}
                 className="group"
               >
-                <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden h-full">
+                <div className={`bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden h-full relative ${product.featuredUntil && new Date(product.featuredUntil) > new Date() ? 'ring-2 ring-amber-400' : ''}`}>
+                  {product.featuredUntil && new Date(product.featuredUntil) > new Date() && (
+                    <span className="absolute top-3 left-3 z-10 px-2 py-1 text-xs font-bold bg-amber-400 text-amber-950 rounded shadow">
+                      ★ Featured
+                    </span>
+                  )}
                   {product.imageUrl && (
                     <img
                       src={product.imageUrl}
