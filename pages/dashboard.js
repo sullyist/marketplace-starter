@@ -18,6 +18,10 @@ export default function Dashboard() {
   const [featureLoading, setFeatureLoading] = useState(null);
   const [featureError, setFeatureError] = useState('');
 
+  const [dealerStatus, setDealerStatus] = useState(null);
+  const [portalLoading, setPortalLoading] = useState(false);
+  const [portalError, setPortalError] = useState('');
+
   const [pwOpen, setPwOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -74,7 +78,24 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchProducts();
+    if (session?.user?.id) {
+      fetch('/api/me/dealer').then(r => r.ok ? r.json() : null).then(setDealerStatus).catch(() => {});
+    }
   }, [session]);
+
+  const openPortal = async () => {
+    setPortalError('');
+    setPortalLoading(true);
+    try {
+      const res = await fetch('/api/stripe/portal', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok || !data.url) throw new Error(data.error || 'Could not open billing portal');
+      window.location.href = data.url;
+    } catch (err) {
+      setPortalError(err.message || 'Failed to open billing portal');
+      setPortalLoading(false);
+    }
+  };
 
   const handleFeature = async (productId) => {
     setFeatureError('');
@@ -141,6 +162,44 @@ export default function Dashboard() {
             + Post New Ad
           </Link>
         </div>
+
+        {/* Dealer subscription status */}
+        {dealerStatus && (
+          <div className={`mb-6 rounded-lg shadow-sm border p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 ${dealerStatus.isDealer ? 'bg-amber-50 border-amber-200' : 'bg-white border-gray-100'}`}>
+            <div>
+              {dealerStatus.isDealer ? (
+                <>
+                  <h3 className="font-bold text-amber-900">★ Dealer account active</h3>
+                  <p className="text-sm text-amber-800">
+                    Renews on {new Date(dealerStatus.dealerUntil).toLocaleDateString('en-IE', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h3 className="font-bold text-gray-900">Sell like a pro</h3>
+                  <p className="text-sm text-gray-600">Dealer accounts get a trusted badge, priority placement and unlimited listings.</p>
+                </>
+              )}
+              {portalError && <p className="mt-2 text-sm text-red-600">{portalError}</p>}
+            </div>
+            {dealerStatus.isDealer ? (
+              <button
+                onClick={openPortal}
+                disabled={portalLoading}
+                className="px-5 py-2 bg-white border border-amber-300 text-amber-900 font-medium rounded-lg hover:bg-amber-100 transition disabled:opacity-60"
+              >
+                {portalLoading ? 'Opening…' : 'Manage subscription'}
+              </button>
+            ) : (
+              <Link
+                href="/upgrade"
+                className="px-5 py-2 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 transition"
+              >
+                Become a dealer
+              </Link>
+            )}
+          </div>
+        )}
 
         {/* Change Password */}
         <div className="mb-8 bg-white rounded-lg shadow-sm border border-gray-100">

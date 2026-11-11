@@ -203,9 +203,12 @@ export default function ListingDetail({ product }) {
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-2xl font-bold mb-4">Seller Information</h2>
               <div className="space-y-2">
-                <div className="flex items-center">
-                  <span className="font-medium text-gray-700 mr-2">Name:</span>
+                <div className="flex items-center flex-wrap gap-2">
+                  <span className="font-medium text-gray-700">Name:</span>
                   <span className="text-gray-900">{product.user.name || 'Not provided'}</span>
+                  {product.user.dealerUntil && new Date(product.user.dealerUntil) > new Date() && (
+                    <span className="px-2 py-0.5 text-xs font-bold bg-blue-600 text-white rounded">Dealer</span>
+                  )}
                 </div>
               </div>
               {isOwner ? (

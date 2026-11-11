@@ -138,6 +138,7 @@ export async function getServerSideProps(context) {
       orderBy,
       skip: (currentPage - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
+      include: { user: { select: { dealerUntil: true } } },
     }),
     prisma.product.count({ where: filters }),
   ]);
@@ -466,6 +467,11 @@ export default function Listings({ products, totalCount, totalPages, currentPage
                   {product.featuredUntil && new Date(product.featuredUntil) > new Date() && (
                     <span className="absolute top-3 left-3 z-10 px-2 py-1 text-xs font-bold bg-amber-400 text-amber-950 rounded shadow">
                       ★ Featured
+                    </span>
+                  )}
+                  {product.user?.dealerUntil && new Date(product.user.dealerUntil) > new Date() && (
+                    <span className="absolute top-3 right-3 z-10 px-2 py-1 text-xs font-bold bg-blue-600 text-white rounded shadow">
+                      Dealer
                     </span>
                   )}
                   {product.imageUrl && (

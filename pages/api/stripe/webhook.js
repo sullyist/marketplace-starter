@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { stripe } from '../../../lib/stripe';
+import { DEALER_SUBSCRIPTION, CURRENCY } from '../../../lib/pricing';
 
 const prisma = new PrismaClient();
 
@@ -50,6 +51,86 @@ async function handleFeaturedCheckout(session) {
   });
 }
 
+async function handleDealerCheckout(session) {
+  const { userId } = session.metadata || {};
+  if (!userId) {
+    console.warn('[stripe webhook] dealer checkout missing userId:', session.id);
+    return;
+  }
+  if (!session.subscription || !session.customer) return;
+
+  const subscriptionId = typeof session.subscription === 'string'
+    ? session.subscription
+    : session.subscription.id;
+  const customerId = typeof session.customer === 'string'
+    ? session.customer
+    : session.customer.id;
+
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      stripeCustomerId: customerId,
+      stripeSubscriptionId: subscriptionId,
+      dealerUntil: new Date(subscription.current_period_end * 1000),
+    },
+  });
+}
+
+async function syncSubscription(subscription) {
+  const customerId = typeof subscription.customer === 'string'
+    ? subscription.customer
+    : subscription.customer.id;
+  const user = await prisma.user.findUnique({ where: { stripeCustomerId: customerId } });
+  if (!user) {
+    console.warn('[stripe webhook] no user for customer', customerId);
+    return;
+  }
+
+  const active = ['active', 'trialing', 'past_due'].includes(subscription.status);
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      stripeSubscriptionId: subscription.id,
+      dealerUntil: active ? new Date(subscription.current_period_end * 1000) : null,
+    },
+  });
+}
+
+async function handleSubscriptionDeleted(subscription) {
+  const customerId = typeof subscription.customer === 'string'
+    ? subscription.customer
+    : subscription.customer.id;
+  const user = await prisma.user.findUnique({ where: { stripeCustomerId: customerId } });
+  if (!user) return;
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { stripeSubscriptionId: null, dealerUntil: null },
+  });
+}
+
+async function logInvoicePayment(invoice, status) {
+  if (!invoice.id || !invoice.customer) return;
+  const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer.id;
+  const user = await prisma.user.findUnique({ where: { stripeCustomerId: customerId } });
+  if (!user) return;
+
+  const existing = await prisma.payment.findUnique({ where: { stripeInvoiceId: invoice.id } });
+  if (existing) return;
+
+  await prisma.payment.create({
+    data: {
+      userId: user.id,
+      amount: invoice.amount_paid || invoice.amount_due || DEALER_SUBSCRIPTION.amount,
+      currency: invoice.currency || CURRENCY,
+      type: 'dealer_subscription',
+      stripeInvoiceId: invoice.id,
+      status,
+    },
+  });
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
   if (!stripe) return res.status(500).json({ error: 'Stripe not configured' });
@@ -70,16 +151,30 @@ export default async function handler(req, res) {
   console.log('[stripe webhook] received:', event.type, event.id);
 
   try {
-    if (event.type === 'checkout.session.completed') {
-      const session = event.data.object;
-      if (session.metadata?.type === 'featured') {
-        await handleFeaturedCheckout(session);
+    switch (event.type) {
+      case 'checkout.session.completed': {
+        const session = event.data.object;
+        if (session.metadata?.type === 'featured') {
+          await handleFeaturedCheckout(session);
+        } else if (session.metadata?.type === 'dealer') {
+          await handleDealerCheckout(session);
+        }
+        break;
       }
-      // dealer subscription handled in Milestone 3
+      case 'customer.subscription.updated':
+      case 'customer.subscription.created':
+        await syncSubscription(event.data.object);
+        break;
+      case 'customer.subscription.deleted':
+        await handleSubscriptionDeleted(event.data.object);
+        break;
+      case 'invoice.payment_succeeded':
+        await logInvoicePayment(event.data.object, 'succeeded');
+        break;
+      case 'invoice.payment_failed':
+        await logInvoicePayment(event.data.object, 'failed');
+        break;
     }
-    // Milestone 3 also handles:
-    //   customer.subscription.updated / .deleted
-    //   invoice.payment_failed
   } catch (err) {
     console.error('[stripe webhook] handler error for', event.type, err);
     return res.status(500).json({ error: 'Handler failed' });
